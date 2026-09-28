@@ -1,0 +1,4 @@
+.db-password
+.env
+.env.*
+node_modules/
