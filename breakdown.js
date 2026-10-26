@@ -2,7 +2,7 @@
 // The goal's words pick the template; nothing leaves the page (Decision 011 in the class repo).
 
 // Leading verbs dropped so the goal's own words read naturally inside a step.
-const LEAD = /^(study(ing)? for|prep(are)? for|cram for|review for|write|writing|draft|finish|complete|start|do|get( a| an)?|find( a| an)?|land( a| an)?|apply (to|for)|submit|plan|planning|organize|throw|host|clean( up)?|tidy( up)?|learn( how to)?|get better at|practice|work on|build|make|create|launch)\s+/i;
+const LEAD = /^(go( to)?|run to|stop by|study(ing)? for|prep(are)? for|cram for|review for|write|writing|draft|finish|complete|start|do|get( a| an)?|find( a| an)?|land( a| an)?|apply (to|for)|submit|plan|planning|organize|throw|host|clean( up)?|tidy( up)?|learn( how to)?|get better at|practice|work on|build|make|create|launch)\s+/i;
 
 const DETERMINER = /^(my|the|a|an|your|this|that|next|our|his|her|their)\b/i;
 
@@ -16,9 +16,9 @@ const TEMPLATES = [
       `List every topic ${the(x)} covers`,
       "Gather your notes, slides, and old homework",
       "Make a one-page study guide of the key ideas",
-      "Do a practice test or 10 practice problems",
-      "Go back over the ones you missed",
-      "Quick review the night before, then sleep",
+      "Go to office hours or a TA review session with 2 questions",
+      "Do a practice test and go over what you missed",
+      "Book your testing center time if needed, then sleep well the night before",
     ],
   },
   {
@@ -26,20 +26,41 @@ const TEMPLATES = [
     steps: (x) => [
       `Reread the prompt and rubric for ${the(x)}`,
       "Pick your topic and write your main point in one sentence",
-      "Find 3 to 5 sources and save the quotes you'll use",
-      "Write a rough outline",
-      "Write a messy first draft",
-      "Revise, check citations, and proofread out loud",
+      "Find 3 to 5 sources (a campus librarian can help if you're stuck)",
+      "Write a rough outline and a messy first draft",
+      "Take your draft to the writing center or office hours",
+      "Revise, check citations, and submit it",
     ],
   },
   {
     match: /\b(homework|assignment|problem set|p-?set|worksheet|lab report)\b/i,
     steps: (x) => [
       `Open ${the(x)} and list each problem or part`,
-      "Gather what you need (notes, textbook, calculator)",
+      "Gather your notes, the textbook, and the lecture slides",
       "Do the easiest part first to get going",
-      "Mark the parts you're stuck on and ask for help",
+      "Bring the parts you're stuck on to a TA, tutoring lab, or study group",
       "Check your answers and submit it",
+    ],
+  },
+  {
+    match: /\b(store|grocer(y|ies)|shopping|shop|errands?|pick up|buy|target|walmart|costco|pharmacy|prescription|bank|post office|mail|return)\b/i,
+    steps: () => [
+      "Write a list of what you need",
+      "Check what you already have at home",
+      "Grab your bags, wallet, and keys",
+      "Go and get everything on the list",
+      "Put it all away when you get home",
+    ],
+  },
+  {
+    match: /\b(class(es)?|course|grades?|gpa|pass(ing)?|an a in|syllabus|semester)\b/i,
+    steps: () => [
+      "Write down the grade you're aiming for",
+      "Check the syllabus for every big due date and exam",
+      "Add those due dates to your School list",
+      "Find your professor's and TA's office hours",
+      "Join or start a study group",
+      "Check your grade every Friday",
     ],
   },
   {
@@ -56,9 +77,9 @@ const TEMPLATES = [
     match: /\b(jobs?|internships?|co-?op|career|hired|position|role|employment|resume|cover letter|linkedin)\b/i,
     steps: () => [
       "Write down the 3 kinds of roles you want most",
-      "Update your resume",
-      "Find 10 openings and save them in one place",
-      "Ask one person you know for a referral or a quick chat",
+      "Get your resume reviewed at the campus career center",
+      "Find 10 openings on your school's job board (like Handshake) and save them",
+      "Ask a professor, alum, or friend for a referral or a quick chat",
       "Apply to your top 3 this week",
       "Follow up on each one a week later",
     ],
@@ -68,9 +89,9 @@ const TEMPLATES = [
     steps: (x) => [
       `Find the deadline and requirements for ${the(x)}`,
       "Make a checklist of every document it asks for",
-      "Ask for recommendation letters (give people 2+ weeks)",
+      "Ask a professor for a recommendation letter (give them 2+ weeks)",
       "Draft your personal statement or answers",
-      "Have someone read it over",
+      "Have the writing center or an advisor read it over",
       "Submit it and save the confirmation",
     ],
   },
@@ -108,7 +129,7 @@ const TEMPLATES = [
     ],
   },
   {
-    match: /\b(clean|tidy|laundry|dishes|declutter|vacuum|organi[sz]e|chores?|room|kitchen|bathroom|closet|garage|car|fridge|desk|pack(ing)?|move|moving|groceries)\b/i,
+    match: /\b(clean|tidy|laundry|dishes|declutter|vacuum|organi[sz]e|chores?|room|kitchen|bathroom|closet|garage|car|fridge|desk|pack(ing)?|move|moving)\b/i,
     steps: (x) => [
       "Gather what you need",
       `Set a 15-minute timer and start on ${the(x)}`,
@@ -121,27 +142,20 @@ const TEMPLATES = [
     match: /\b(project|capstone|presentation|portfolio|app|website|site|research|poster|video|podcast|lab|business|startup|club|book|novel)\b/i,
     steps: (x) => [
       `Write what "done" looks like for ${the(x)}`,
-      "List every piece of the work",
-      "Put a date next to each piece, working back from the due date",
-      "If it's a group, split the pieces and agree on a check-in",
+      "List every piece of the work (check the rubric)",
+      "If it's a group, split the pieces and set a weekly check-in",
+      "Run your idea by your professor or TA in office hours",
       "Do the first piece today",
       "Leave a day at the end to review and polish",
     ],
   },
 ];
 
-// Goals that match no template get a general plan.
-const GENERAL = [
-  'Decide what "done" looks like',
-  "Break it into the 3 biggest pieces",
-  "Pick a date to finish each piece",
-  "Do the first 15-minute piece",
-  "Check your progress at the end of the week",
-];
-
+// Returns [] when no template fits: the page then says it looks like a one-step to-do
+// instead of inventing vague steps (friend test, 2026-10-26).
 export function breakDown(goal) {
   const text = goal.trim().replace(/[.!?]+$/, "");
   const x = text.replace(LEAD, "") || text;
   const template = TEMPLATES.find((t) => t.match.test(text));
-  return template ? template.steps(x) : GENERAL;
+  return template ? template.steps(x) : [];
 }

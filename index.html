@@ -24,7 +24,7 @@
     --line-strong: #DDCFBA;
     --h: 221;
     --accent: hsl(var(--h) 80% 52%);
-    --accent-2: hsl(calc(var(--h) + 38) 78% 58%);
+    --accent-2: hsl(calc(var(--h) - 28) 78% 55%);
     --accent-ink: #FFFFFF;
     --accent-soft: hsl(var(--h) 80% 52% / .11);
     --ok: #16A34A;
@@ -53,7 +53,7 @@
       --line: rgba(255, 255, 255, .08);
       --line-strong: rgba(255, 255, 255, .16);
       --accent: hsl(var(--h) 90% 68%);
-      --accent-2: hsl(calc(var(--h) + 38) 85% 64%);
+      --accent-2: hsl(calc(var(--h) - 28) 85% 62%);
       --accent-ink: #0B1220;
       --accent-soft: hsl(var(--h) 90% 68% / .15);
       --ok: #4ADE80;
@@ -79,7 +79,7 @@
     --line: rgba(255, 255, 255, .08);
     --line-strong: rgba(255, 255, 255, .16);
     --accent: hsl(var(--h) 90% 68%);
-    --accent-2: hsl(calc(var(--h) + 38) 85% 64%);
+    --accent-2: hsl(calc(var(--h) - 28) 85% 62%);
     --accent-ink: #0B1220;
     --accent-soft: hsl(var(--h) 90% 68% / .15);
     --ok: #4ADE80;
@@ -136,7 +136,7 @@
   .hero {
     display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 20px;
     padding: 26px 26px 24px; border-radius: 24px; color: #fff;
-    background: linear-gradient(120deg, hsl(var(--h) 80% 52%), hsl(calc(var(--h) + 38) 78% 58%), hsl(calc(var(--h) - 20) 80% 55%));
+    background: linear-gradient(120deg, hsl(var(--h) 80% 52%), hsl(calc(var(--h) - 28) 78% 52%), hsl(calc(var(--h) - 12) 80% 55%));
     background-size: 220% 220%; animation: sweep 14s ease-in-out infinite alternate;
     box-shadow: 0 14px 34px -16px hsl(var(--h) 80% 45% / .7);
     transition: box-shadow .4s var(--ease);
@@ -197,7 +197,7 @@
     background: linear-gradient(120deg, var(--accent), var(--accent-2)); color: #fff; border-color: transparent;
     box-shadow: 0 6px 16px -8px var(--accent);
   }
-  .list-tab .dot { width: 8px; height: 8px; border-radius: 50%; background: hsl(var(--tab-h) 75% 55%); }
+  .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: hsl(var(--tab-h) 75% 55%); }
   .list-tab[aria-current="true"] .dot { background: #fff; }
   .list-tab { transition: background .2s, color .2s, transform .2s var(--ease); }
   .list-tab:active { transform: scale(.96); }
@@ -394,6 +394,25 @@
   }
   .breakdown-btn:hover { transform: translateY(-1px); }
   .breakdown-btn svg { width: 16px; height: 16px; }
+  .list-tab.next-tab svg { width: 15px; height: 15px; }
+  .next-item .goal-chip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .next-item .expand svg { transform: rotate(-90deg); }
+  .finish {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 12px; border-radius: 12px; background: var(--accent-soft); font-size: 14px;
+  }
+  .finish b { font-weight: 800; }
+  .finish svg { width: 15px; height: 15px; vertical-align: -2px; margin-right: 6px; color: var(--accent); }
+  .finish .bar { width: 70px; height: 6px; }
+  .step { grid-template-columns: auto 1fr auto auto; }
+  .step-date { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+  .step-date.today { color: var(--accent); }
+  .step-date.overdue { color: var(--danger); }
+  .step.done .step-date { opacity: .5; }
+  .ask-due { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+  .ask-due input[type="date"] { border: 1px solid var(--line-strong); background: var(--bg); border-radius: 10px; padding: 7px 10px; font-size: 14px; outline: 0; }
+  .ask-due input[type="date"]:focus { border-color: var(--accent); }
+  .ask-due .text-btn:hover { color: var(--ink); background: var(--line); }
   .step.enter { animation: stepIn .4s var(--ease) both; }
   @keyframes stepIn { from { opacity: 0; transform: translateX(-10px); } }
   .bar { width: 34px; height: 4px; border-radius: 4px; background: var(--line-strong); overflow: hidden; }
@@ -531,7 +550,7 @@
     </form>
 
     <div class="toolbar">
-      <div class="segmented" id="filters" role="group" aria-label="Filter">
+      <div class="segmented" id="filters" role="group" aria-label="Filter" hidden>
         <span class="indicator" id="indicator"></span>
         <button type="button" data-filter="all" aria-pressed="true">All <span class="count" data-count="all"></span></button>
         <button type="button" data-filter="active" aria-pressed="false">Open <span class="count" data-count="active"></span></button>
@@ -543,7 +562,6 @@
     <ul class="list" id="list" aria-live="polite"></ul>
     <div id="empty" hidden></div>
 
-    <p class="footer-note">Press <kbd>N</kbd> to add · open a to-do to break it down or rename it</p>
   </main>
 </div>
 
@@ -574,14 +592,18 @@ const state = {
   editingId: null,
   fresh: new Set(),
   freshSteps: new Set(),
+  askDueFor: null, // to-do whose "Break it down" is asking for a finish date
 };
 
 // Each list gets its own color, by its place in the row.
-const HUES = [221, 262, 158, 24, 330, 188, 45];
+// School blue, Goals coral, Chores green, then amber, rose, teal, gold. No purple (friend test).
+const HUES = [214, 8, 152, 32, 345, 186, 48];
+const NEXT = "next"; // the "Next steps" view, not a real list
+const NEXT_HUE = 24;
 const hueOf = (list) => HUES[Math.max(0, state.lists.indexOf(list)) % HUES.length];
 function applyListColor() {
   const list = state.lists.find((l) => l.id === state.listId);
-  document.documentElement.style.setProperty("--h", list ? hueOf(list) : HUES[0]);
+  document.documentElement.style.setProperty("--h", state.listId === NEXT ? NEXT_HUE : list ? hueOf(list) : HUES[0]);
 }
 
 /* ---------------- Icons ---------------- */
@@ -595,6 +617,7 @@ const ICONS = {
   more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
   x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></svg>',
+  flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>',
   steps: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>',
 };
 
@@ -735,7 +758,8 @@ async function loadTodos() {
   }
   state.loading = false;
   const saved = storedListId();
-  state.listId = state.lists.some((l) => l.id === saved) ? saved : first ?? null;
+  state.listId = saved === NEXT || state.lists.some((l) => l.id === saved) ? saved
+    : nextSteps().length ? NEXT : first ?? null;
   renderLists();
   render();
 }
@@ -781,13 +805,14 @@ async function patchTodo(id, fields, { rerender = true } = {}) {
 }
 
 // Adds steps under a to-do, after any it already has.
-async function addSteps(parent, titles, { focusAdd = false } = {}) {
+async function addSteps(parent, titles, { focusAdd = false, dates = [] } = {}) {
   const now = new Date().toISOString();
   const start = stepsOf(parent.id).reduce((n, s) => Math.max(n, s.position + 1), 0);
   const rows = titles.map((title, i) => ({
     id: crypto.randomUUID(), title, list_id: parent.list_id, parent_id: parent.id, position: start + i,
+    due_date: dates[i] ?? null,
   }));
-  state.todos.push(...rows.map((r) => ({ ...r, notes: null, is_complete: false, due_date: null, created_at: now, updated_at: now })));
+  state.todos.push(...rows.map((r) => ({ ...r, notes: null, is_complete: false, created_at: now, updated_at: now })));
   rows.forEach((r) => state.freshSteps.add(r.id));
   render();
   state.freshSteps.clear();
@@ -855,6 +880,18 @@ function dueInfo(s) {
   };
 }
 
+function isoDate(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+// Spreads n steps evenly from today to the due date; the last step lands on the due date.
+function planDates(n, due) {
+  if (!due) return [];
+  const today = startOfToday();
+  const days = Math.max(0, Math.round((parseDate(due) - today) / DAY));
+  return Array.from({ length: n }, (_, i) =>
+    isoDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + Math.round(((i + 1) * days) / n))));
+}
+
 /* ---------------- Hero ---------------- */
 function renderHero() {
   const now = new Date();
@@ -865,6 +902,7 @@ function renderHero() {
 }
 
 function renderProgress() {
+  if (state.listId === NEXT) return renderNextProgress();
   const items = state.todos.filter(inList);
   const total = items.length;
   const done = items.filter((t) => t.is_complete).length;
@@ -897,6 +935,32 @@ function renderProgress() {
   renderLists();
 }
 
+function renderNextProgress() {
+  const goals = state.todos.filter((t) => !t.parent_id && !t.is_complete && stepsOf(t.id).length);
+  const steps = goals.flatMap((g) => stepsOf(g.id));
+  const done = steps.filter((s) => s.is_complete).length;
+  const pct = steps.length ? Math.round((done / steps.length) * 100) : 0;
+  const C = 2 * Math.PI * 34;
+  $("ringFill").style.strokeDasharray = C;
+  $("ringFill").style.strokeDashoffset = C * (1 - pct / 100);
+  $("ringPct").textContent = pct + "%";
+  $("ring").classList.toggle("complete", false);
+  const n = nextSteps().length;
+  $("subtitle").textContent = state.loading ? "Gathering your list…"
+    : n ? `${n} next ${n === 1 ? "step" : "steps"}, one for each goal` : "No next steps yet";
+  $("clearDone").hidden = true;
+  renderLists();
+}
+
+// The first unfinished step of each unfinished goal, soonest first.
+function nextSteps() {
+  return state.todos
+    .filter((t) => !t.parent_id && !t.is_complete)
+    .map((goal) => ({ goal, step: stepsOf(goal.id).find((s) => !s.is_complete) }))
+    .filter((x) => x.step)
+    .sort((a, b) => (a.step.due_date ?? a.goal.due_date ?? "9999").localeCompare(b.step.due_date ?? b.goal.due_date ?? "9999"));
+}
+
 /* ---------------- Lists ---------------- */
 function storedListId() { try { return localStorage.getItem("listId"); } catch { return null; } }
 function currentList() { return state.lists.find((l) => l.id === state.listId); }
@@ -916,6 +980,14 @@ function selectList(id) {
 function renderLists() {
   if (state.loading) return $("lists").replaceChildren();
   const tabs = [];
+  const nextCount = nextSteps().length;
+  const nextTab = el("button", {
+    type: "button", class: "list-tab next-tab", html: ICONS.spark, style: `--tab-h: ${NEXT_HUE}`,
+    "aria-current": String(state.listId === NEXT), onclick: () => { if (state.listId !== NEXT) selectList(NEXT); },
+  });
+  nextTab.append("Next steps");
+  if (nextCount) nextTab.append(el("span", { class: "count" }, String(nextCount)));
+  tabs.push(nextTab);
   for (const l of state.lists) {
     const active = l.id === state.listId;
     const open = state.todos.filter((t) => t.list_id === l.id && !t.parent_id && !t.is_complete).length;
@@ -1062,14 +1134,8 @@ function renderItem(t) {
 
   const steps = stepsOf(t.id);
   const stepsDone = steps.filter((s) => s.is_complete).length;
-  const stepsChip = (n, total) => {
-    const c = chip(n === total ? "steps-done" : "", ICONS.steps, `${n} of ${total} steps`);
-    c.append(el("span", { class: "bar" }, el("i", { style: `width: ${Math.round((n / total) * 100)}%` })));
-    return c;
-  };
-  const chip = (cls, icon, label) => { const c = el("span", { class: `chip ${cls}`, html: icon }); c.append(label); return c; };
   const meta = el("div", { class: "meta" },
-    due ? chip(due.cls, ICONS.cal, due.label) : null,
+    due ? chip(due.cls, ICONS.cal, steps.length ? `Done by ${due.label}` : due.label) : null,
     steps.length ? stepsChip(stepsDone, steps.length) : null,
     t.notes ? chip("", ICONS.note, "Notes") : null,
   );
@@ -1116,8 +1182,40 @@ function renderItem(t) {
   return li;
 }
 
+function chip(cls, icon, label) { const c = el("span", { class: `chip ${cls}`, html: icon }); c.append(label); return c; }
+function progressBar(n, total) {
+  return el("span", { class: "bar" }, el("i", { style: `width: ${total ? Math.round((n / total) * 100) : 0}%` }));
+}
+function stepsChip(n, total) {
+  const c = chip(n === total ? "steps-done" : "", ICONS.steps, `${n} of ${total} steps`);
+  c.append(progressBar(n, total));
+  return c;
+}
+
+// "Break it down" asks for a finish line first, then plans the steps back from it.
+function makePlan(t, due) {
+  state.askDueFor = null;
+  const titles = breakDown(t.title);
+  if (due && due !== t.due_date) patchTodo(t.id, { due_date: due }, { rerender: !titles.length });
+  if (!titles.length) {
+    render();
+    return toast("This one looks small enough to do in one go. Add your own steps below if it helps.");
+  }
+  addSteps(t, titles, { dates: planDates(titles.length, due) });
+  toast(due ? "Here’s your plan to the finish line. Edit any step to make it yours." : "Here’s a plan. Edit any step to make it yours.");
+}
+
 function renderSteps(t, steps) {
   const wrap = el("div", { class: "steps" });
+  if (steps.length) {
+    const n = steps.filter((s) => s.is_complete).length;
+    const finish = el("div", { class: "finish" },
+      el("span", { html: ICONS.flag }),
+      progressBar(n, steps.length));
+    finish.firstChild.append(n === steps.length ? "Finished! " : "Finish line: ",
+      el("b", {}, t.due_date ? parseDate(t.due_date).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) : "no date yet"));
+    wrap.append(finish);
+  }
   if (steps.length) {
     let delay = 0;
     wrap.append(el("ul", { class: "step-list" }, ...steps.map((s) => {
@@ -1125,10 +1223,17 @@ function renderSteps(t, steps) {
       if (state.freshSteps.has(s.id) && !reduceMotion) { li.classList.add("enter"); li.style.animationDelay = `${delay++ * 70}ms`; }
       return li;
     })));
+  } else if (state.askDueFor === t.id) {
+    const date = el("input", { type: "date", value: t.due_date ?? "", min: isoDate(new Date()), "aria-label": "Finish date" });
+    const go = el("button", { type: "button", class: "breakdown-btn", html: ICONS.spark, onclick: () => makePlan(t, date.value || null) });
+    go.append("Make my plan");
+    wrap.append(el("div", { class: "ask-due" }, "When does this need to be done?", date, go,
+      el("button", { type: "button", class: "text-btn", onclick: () => makePlan(t, null) }, "No date")));
+    requestAnimationFrame(() => { try { date.showPicker(); } catch {} });
   } else {
     const btn = el("button", {
       type: "button", class: "breakdown-btn", html: ICONS.spark,
-      onclick: () => { addSteps(t, breakDown(t.title)); toast("Here’s a plan. Edit any step to make it yours."); },
+      onclick: () => { state.askDueFor = t.id; render(); },
     });
     btn.append("Break it down");
     wrap.append(btn);
@@ -1155,6 +1260,7 @@ function renderStep(s) {
     if (!v) title.value = s.title;
     else if (v !== s.title) patchTodo(s.id, { title: v }, { rerender: false });
   });
+  const due = dueInfo(s.due_date);
   return el("li", { class: `step${s.is_complete ? " done" : ""}` },
     el("button", {
       type: "button", class: "step-check", html: ICONS.check,
@@ -1162,11 +1268,44 @@ function renderStep(s) {
       onclick: () => patchTodo(s.id, { is_complete: !s.is_complete }),
     }),
     title,
+    due ? el("span", { class: `step-date ${due.cls}` }, due.label) : el("span"),
     el("button", {
       type: "button", class: "step-del", html: ICONS.x, "aria-label": "Delete step",
       onclick: () => deleteTodos([s.id], "Step deleted"),
     }),
   );
+}
+
+function renderNextItem({ goal, step }) {
+  const list = state.lists.find((l) => l.id === goal.list_id);
+  const steps = stepsOf(goal.id);
+  const due = dueInfo(step.due_date);
+  const goalChip = el("span", { class: "chip goal-chip", style: `--tab-h: ${list ? hueOf(list) : HUES[0]}` }, el("span", { class: "dot" }), goal.title);
+  // Tapping a next step opens its goal in its own list.
+  const openGoal = () => { selectList(goal.list_id); state.openId = goal.id; render(); };
+  return el("li", { class: "card item next-item", "data-id": step.id, onclick: openGoal },
+    el("button", {
+      class: "check", html: ICONS.check, "aria-label": "Mark step as done",
+      onclick: (e) => { e.stopPropagation(); completeNext(goal, step, e.currentTarget.closest(".item")); },
+    }),
+    el("div", { class: "body" },
+      el("span", { class: "title" }, step.title),
+      el("div", { class: "meta" }, goalChip, due ? chip(due.cls, ICONS.cal, due.label) : null,
+        stepsChip(steps.filter((s) => s.is_complete).length, steps.length))),
+    el("button", { class: "expand", html: ICONS.chevron, "aria-label": "Open goal", onclick: (e) => { e.stopPropagation(); openGoal(); } }),
+  );
+}
+
+function completeNext(goal, step, node) {
+  node?.classList.add("done");
+  patchTodo(step.id, { is_complete: true }, { rerender: false });
+  const after = stepsOf(goal.id).find((s) => !s.is_complete);
+  toast(after ? `Nice! Next up: ${after.title}` : `You finished every step of “${goal.title}”!`, {
+    label: "Undo", run: () => patchTodo(step.id, { is_complete: false }),
+  });
+  if (after) state.fresh.add(after.id);
+  clearTimeout(completeNext.timer);
+  completeNext.timer = setTimeout(render, reduceMotion ? 0 : 550);
 }
 
 function toggleOpen(id) {
@@ -1208,9 +1347,13 @@ function render() {
     return;
   }
 
+  const isNext = state.listId === NEXT;
+  $("composer").hidden = isNext;
+  document.querySelector(".toolbar").hidden = isNext;
   const open = state.todos.filter((t) => inList(t) && !t.is_complete).sort(sortOpen);
   const done = state.todos.filter((t) => inList(t) && t.is_complete).sort(sortDone);
   const nodes = [];
+  if (isNext) nodes.push(...nextSteps().map(renderNextItem));
   if (state.filter !== "done") nodes.push(...open.map(renderItem));
   if (state.filter === "all" && done.length && open.length) nodes.push(el("li", { class: "section-label" }, "Completed"));
   if (state.filter !== "active") nodes.push(...done.map(renderItem));
@@ -1239,6 +1382,10 @@ function render() {
 }
 
 function emptyState() {
+  if (state.listId === NEXT) {
+    return el("div", { class: "empty" }, el("h2", {}, "No next steps yet"),
+      el("p", {}, "Open a goal in any list and tap “Break it down.” Its first step shows up here."));
+  }
   const items = state.todos.filter(inList);
   const total = items.length;
   const allDone = total > 0 && items.every((t) => t.is_complete);
