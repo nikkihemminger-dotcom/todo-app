@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Today</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='%23D9582B'/><path d='M20 33l8 8 16-18' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#FBF5EA">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Today">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232676E6'/><stop offset='1' stop-color='%2314AAAF'/></linearGradient></defs><rect x='4' y='4' width='56' height='56' rx='16' fill='url(%23g)'/><path d='M20 33l8 8 16-18' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -210,6 +217,22 @@
   }
   .list-more:hover { color: var(--ink); background: var(--surface); }
   .list-more svg { width: 16px; height: 16px; }
+  .list-input {
+    flex: none; width: 150px; height: 34px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px;
+    font-weight: 600; color: var(--ink); background: var(--surface-solid); border: 1.5px solid var(--accent); outline: 0;
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  .confirm-bar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: -4px 0 14px; padding: 12px 14px;
+    border-radius: 14px; background: var(--danger-soft); color: var(--ink); font-size: 14px; font-weight: 600;
+  }
+  .confirm-bar span { flex: 1 1 200px; }
+  .confirm-bar .danger-solid { background: var(--danger); color: #fff; padding: 7px 14px; border-radius: 10px; font-weight: 700; }
+  .confirm-bar .text-btn:hover { color: var(--ink); background: var(--line); }
+  .behind { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; font-size: 14px; color: var(--ink-2); padding: 2px 2px 4px; }
+  .behind b { color: var(--ink); }
+  .replan-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-size: 13px; font-weight: 700; }
+  .replan-btn svg { width: 14px; height: 14px; }
   .menu {
     position: fixed; z-index: 20; min-width: 170px; padding: 6px; border-radius: 14px;
     background: var(--surface-solid); display: flex; flex-direction: column; box-shadow: var(--shadow-lift);
@@ -533,6 +556,7 @@
     </section>
 
     <nav class="lists" id="lists" aria-label="Your lists"></nav>
+    <div class="confirm-bar" id="listConfirm" role="alertdialog" hidden></div>
 
     <form class="card composer" id="composer" autocomplete="off">
       <span class="plus" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
@@ -593,6 +617,9 @@ const state = {
   fresh: new Set(),
   freshSteps: new Set(),
   askDueFor: null, // to-do whose "Break it down" is asking for a finish date
+  replanFor: null, // goal whose re-plan is asking for a new finish date
+  listEdit: null, // { id } while renaming a list, { id: null } while naming a new one
+  confirmDeleteId: null, // list waiting on "Delete?" confirmation
 };
 
 // Each list gets its own color, by its place in the row.
@@ -617,6 +644,7 @@ const ICONS = {
   more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
   x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></svg>',
+  replan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg>',
   flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>',
   steps: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>',
 };
@@ -970,6 +998,7 @@ function stepsOf(id) { return state.todos.filter((t) => t.parent_id === id).sort
 
 function selectList(id) {
   state.listId = id;
+  state.confirmDeleteId = null;
   state.openId = null;
   state.editingId = null;
   try { localStorage.setItem("listId", id); } catch {}
@@ -977,8 +1006,32 @@ function selectList(id) {
   render();
 }
 
+function listNameInput(value) {
+  const input = el("input", { class: "list-input", value, maxlength: 60, placeholder: "List name", "aria-label": "List name" });
+  let finished = false;
+  const finish = (save) => {
+    if (finished) return;
+    finished = true;
+    const id = state.listEdit?.id;
+    state.listEdit = null;
+    const name = input.value.trim().slice(0, 60);
+    if (save && name) id ? renameList(id, name) : createList(name);
+    else renderLists();
+  };
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") finish(true);
+    if (e.key === "Escape") finish(false);
+  });
+  input.addEventListener("blur", () => finish(true));
+  requestAnimationFrame(() => { input.focus(); input.select(); });
+  return input;
+}
+
 function renderLists() {
   if (state.loading) return $("lists").replaceChildren();
+  // Don't rebuild the row out from under someone typing a list name.
+  if (state.listEdit && document.activeElement?.classList.contains("list-input")) return;
+  renderListConfirm();
   const tabs = [];
   const nextCount = nextSteps().length;
   const nextTab = el("button", {
@@ -989,6 +1042,7 @@ function renderLists() {
   if (nextCount) nextTab.append(el("span", { class: "count" }, String(nextCount)));
   tabs.push(nextTab);
   for (const l of state.lists) {
+    if (state.listEdit?.id === l.id) { tabs.push(listNameInput(l.name)); continue; }
     const active = l.id === state.listId;
     const open = state.todos.filter((t) => t.list_id === l.id && !t.parent_id && !t.is_complete).length;
     tabs.push(el("button", {
@@ -1008,9 +1062,15 @@ function renderLists() {
       }));
     }
   }
-  const add = el("button", { type: "button", class: "list-tab list-add", html: ICONS.plus, onclick: newList });
-  add.append("New list");
-  tabs.push(add);
+  if (state.listEdit && !state.listEdit.id) tabs.push(listNameInput(""));
+  else {
+    const add = el("button", {
+      type: "button", class: "list-tab list-add", html: ICONS.plus,
+      onclick: () => { state.listEdit = { id: null }; renderLists(); },
+    });
+    add.append("New list");
+    tabs.push(add);
+  }
   $("lists").replaceChildren(...tabs);
   applyListColor();
 }
@@ -1027,16 +1087,34 @@ function closeListMenu() { $("listMenu").hidden = true; }
 $("listMenu").addEventListener("click", (e) => {
   const act = e.target.closest("button")?.dataset.act;
   closeListMenu();
-  if (act === "rename") renameList();
-  if (act === "delete") deleteList();
+  const list = currentList();
+  if (!list) return;
+  if (act === "rename") { state.listEdit = { id: list.id }; renderLists(); }
+  if (act === "delete") {
+    if (state.lists.length === 1) return toast("You need at least one list.");
+    state.confirmDeleteId = list.id;
+    renderListConfirm();
+  }
 });
 document.addEventListener("click", (e) => { if (!e.target.closest("#listMenu")) closeListMenu(); });
 addEventListener("scroll", closeListMenu, { passive: true });
 $("lists").addEventListener("scroll", closeListMenu, { passive: true });
 
-async function newList() {
-  const name = prompt("Name your new list")?.trim().slice(0, 60);
-  if (!name) return;
+function renderListConfirm() {
+  const bar = $("listConfirm");
+  const list = state.lists.find((l) => l.id === state.confirmDeleteId);
+  bar.hidden = !list || state.listId !== list.id;
+  if (bar.hidden) return;
+  const count = state.todos.filter((t) => t.list_id === list.id && !t.parent_id).length;
+  const things = count === 1 ? "1 to-do" : `${count} to-dos`;
+  bar.replaceChildren(
+    el("span", {}, count ? `Delete “${list.name}” and its ${things}?` : `Delete “${list.name}”?`),
+    el("button", { type: "button", class: "danger-solid", onclick: () => deleteList(list.id) }, "Delete"),
+    el("button", { type: "button", class: "text-btn", onclick: () => { state.confirmDeleteId = null; renderListConfirm(); } }, "Cancel"),
+  );
+}
+
+async function createList(name) {
   const list = {
     id: crypto.randomUUID(), name, created_at: new Date().toISOString(),
     position: state.lists.reduce((n, l) => Math.max(n, l.position + 1), 0),
@@ -1052,11 +1130,9 @@ async function newList() {
   }
 }
 
-async function renameList() {
-  const list = currentList();
-  if (!list) return;
-  const name = prompt("Rename this list", list.name)?.trim().slice(0, 60);
-  if (!name || name === list.name) return;
+async function renameList(id, name) {
+  const list = state.lists.find((l) => l.id === id);
+  if (!list || name === list.name) return renderLists();
   const prev = list.name;
   list.name = name;
   renderLists();
@@ -1064,13 +1140,11 @@ async function renameList() {
   if (error) { list.name = prev; renderLists(); toast("Couldn't rename that list. " + error.message); }
 }
 
-async function deleteList() {
-  const list = currentList();
-  if (!list) return;
+async function deleteList(id) {
+  const list = state.lists.find((l) => l.id === id);
+  state.confirmDeleteId = null;
+  if (!list) return renderListConfirm();
   if (state.lists.length === 1) return toast("You need at least one list.");
-  const count = state.todos.filter((t) => t.list_id === list.id && !t.parent_id).length;
-  const things = count === 1 ? "1 to-do" : `${count} to-dos`;
-  if (!confirm(count ? `Delete “${list.name}” and its ${things}?` : `Delete “${list.name}”?`)) return;
   const removed = state.todos.filter((t) => t.list_id === list.id);
   state.lists = state.lists.filter((l) => l.id !== list.id);
   state.todos = state.todos.filter((t) => t.list_id !== list.id);
@@ -1205,6 +1279,45 @@ function makePlan(t, due) {
   toast(due ? "Here’s your plan to the finish line. Edit any step to make it yours." : "Here’s a plan. Edit any step to make it yours.");
 }
 
+// Steps whose date has passed and aren't done.
+function behindSteps(steps) {
+  const today = isoDate(new Date());
+  return steps.filter((s) => !s.is_complete && s.due_date && s.due_date < today);
+}
+
+// Spreads the unfinished steps again, from today to the finish line.
+async function replan(t, due) {
+  state.replanFor = null;
+  const left = stepsOf(t.id).filter((s) => !s.is_complete);
+  const dates = planDates(left.length, due);
+  if (due !== t.due_date) patchTodo(t.id, { due_date: due }, { rerender: false });
+  left.forEach((s, i) => patchTodo(s.id, { due_date: dates[i] }, { rerender: false }));
+  render();
+  const label = parseDate(due).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  toast(`New plan, still finishing ${label}. You’ve got this.`);
+}
+
+function renderBehind(t, steps) {
+  const behind = behindSteps(steps).length;
+  if (!behind) return null;
+  const today = isoDate(new Date());
+  const canKeepDate = t.due_date && t.due_date >= today;
+  if (state.replanFor === t.id || !canKeepDate) {
+    const date = el("input", { type: "date", value: canKeepDate ? t.due_date : "", min: today, "aria-label": "New finish date" });
+    const go = el("button", { type: "button", class: "replan-btn", html: ICONS.replan, onclick: () => date.value && replan(t, date.value) });
+    go.append("Re-plan");
+    return el("div", { class: "behind ask-due" },
+      el("span", {}, el("b", {}, behind === 1 ? "1 step is behind." : `${behind} steps are behind.`), " That’s okay. Pick a new finish line:"),
+      date, go);
+  }
+  const go = el("button", { type: "button", class: "replan-btn", html: ICONS.replan, onclick: () => replan(t, t.due_date) });
+  go.append("Re-plan");
+  const other = el("button", { type: "button", class: "text-btn", onclick: () => { state.replanFor = t.id; render(); } }, "Pick a new date");
+  return el("div", { class: "behind" },
+    el("span", {}, el("b", {}, behind === 1 ? "You’re 1 step behind." : `You’re ${behind} steps behind.`), " That’s okay. Want a new plan that still makes it?"),
+    go, other);
+}
+
 function renderSteps(t, steps) {
   const wrap = el("div", { class: "steps" });
   if (steps.length) {
@@ -1215,6 +1328,8 @@ function renderSteps(t, steps) {
     finish.firstChild.append(n === steps.length ? "Finished! " : "Finish line: ",
       el("b", {}, t.due_date ? parseDate(t.due_date).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) : "no date yet"));
     wrap.append(finish);
+    const behind = renderBehind(t, steps);
+    if (behind) wrap.append(behind);
   }
   if (steps.length) {
     let delay = 0;
@@ -1455,6 +1570,9 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeListMenu();
   if (e.key === "Escape" && !typing && state.openId && !state.editingId) toggleOpen(state.openId);
 });
+
+// Lets phones install the site as an app (see sw.js).
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
 // Refresh relative dates ("Today", greeting) when the tab regains focus.
 document.addEventListener("visibilitychange", () => {
