@@ -7,83 +7,87 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='%23D9582B'/><path d='M20 33l8 8 16-18' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #F5EFE6;
-    --glow-1: rgba(255, 164, 120, .42);
-    --glow-2: rgba(168, 156, 255, .26);
-    --glow-3: rgba(120, 200, 170, .20);
-    --surface: rgba(255, 253, 249, .74);
-    --surface-solid: #FFFDF9;
-    --surface-hover: rgba(255, 253, 249, .95);
-    --ink: #1E1A15;
-    --ink-2: #5A5147;
-    --muted: #978C7F;
-    --line: rgba(70, 50, 30, .10);
-    --line-strong: rgba(70, 50, 30, .18);
-    --accent: #D9582B;
+    --bg: #FBF5EA;
+    --glow-1: transparent;
+    --glow-2: transparent;
+    --glow-3: transparent;
+    --surface: #FFFDF8;
+    --surface-solid: #FFFDF8;
+    --surface-hover: #FFFFFF;
+    --ink: #2E261F;
+    --ink-2: #5E5247;
+    --muted: #7D7064;
+    --line: #EDE3D3;
+    --line-strong: #DDCFBA;
+    --h: 221;
+    --accent: hsl(var(--h) 80% 52%);
+    --accent-2: hsl(calc(var(--h) + 38) 78% 58%);
     --accent-ink: #FFFFFF;
-    --accent-soft: rgba(217, 88, 43, .12);
-    --ok: #2F8A62;
-    --warn: #B7791F;
-    --danger: #C2412D;
-    --danger-soft: rgba(194, 65, 45, .10);
-    --shadow: 0 1px 2px rgba(60, 40, 20, .04), 0 10px 30px -12px rgba(60, 40, 20, .18);
-    --shadow-lift: 0 2px 4px rgba(60, 40, 20, .05), 0 18px 40px -14px rgba(60, 40, 20, .28);
+    --accent-soft: hsl(var(--h) 80% 52% / .11);
+    --ok: #16A34A;
+    --warn: #B45309;
+    --danger: #DC2626;
+    --danger-soft: rgba(220, 38, 38, .08);
+    --shadow: 0 1px 2px rgba(90, 60, 30, .06);
+    --shadow-lift: 0 2px 4px rgba(90, 60, 30, .06), 0 8px 20px -8px rgba(90, 60, 30, .18);
     --ease: cubic-bezier(.2, .8, .2, 1);
-    --serif: "Instrument Serif", Georgia, serif;
-    --sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --serif: var(--sans);
+    --sans: "Nunito", ui-rounded, ui-sans-serif, system-ui, -apple-system, sans-serif;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #13110E;
-      --glow-1: rgba(240, 120, 70, .20);
-      --glow-2: rgba(130, 110, 255, .16);
-      --glow-3: rgba(60, 170, 130, .10);
-      --surface: rgba(34, 30, 26, .70);
-      --surface-solid: #1F1B17;
-      --surface-hover: rgba(42, 37, 32, .90);
-      --ink: #F4EDE3;
-      --ink-2: #C3B8AA;
-      --muted: #8A8074;
-      --line: rgba(255, 240, 220, .08);
-      --line-strong: rgba(255, 240, 220, .16);
-      --accent: #F0804F;
-      --accent-ink: #1A0F09;
-      --accent-soft: rgba(240, 128, 79, .15);
-      --ok: #5CC296;
-      --warn: #E0A84A;
-      --danger: #F07A66;
-      --danger-soft: rgba(240, 122, 102, .12);
-      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -12px rgba(0, 0, 0, .6);
-      --shadow-lift: 0 2px 4px rgba(0, 0, 0, .3), 0 18px 40px -14px rgba(0, 0, 0, .7);
+      --bg: #1A1611;
+      --glow-1: transparent;
+      --glow-2: transparent;
+      --glow-3: transparent;
+      --surface: #241F18;
+      --surface-solid: #241F18;
+      --surface-hover: #2B251D;
+      --ink: #F6EEE2;
+      --ink-2: #CFC2B1;
+      --muted: #A09282;
+      --line: rgba(255, 255, 255, .08);
+      --line-strong: rgba(255, 255, 255, .16);
+      --accent: hsl(var(--h) 90% 68%);
+      --accent-2: hsl(calc(var(--h) + 38) 85% 64%);
+      --accent-ink: #0B1220;
+      --accent-soft: hsl(var(--h) 90% 68% / .15);
+      --ok: #4ADE80;
+      --warn: #FBBF24;
+      --danger: #F87171;
+      --danger-soft: rgba(248, 113, 113, .12);
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+      --shadow-lift: 0 1px 3px rgba(0, 0, 0, .4), 0 4px 12px -4px rgba(0, 0, 0, .5);
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #13110E;
-    --glow-1: rgba(240, 120, 70, .20);
-    --glow-2: rgba(130, 110, 255, .16);
-    --glow-3: rgba(60, 170, 130, .10);
-    --surface: rgba(34, 30, 26, .70);
-    --surface-solid: #1F1B17;
-    --surface-hover: rgba(42, 37, 32, .90);
-    --ink: #F4EDE3;
-    --ink-2: #C3B8AA;
-    --muted: #8A8074;
-    --line: rgba(255, 240, 220, .08);
-    --line-strong: rgba(255, 240, 220, .16);
-    --accent: #F0804F;
-    --accent-ink: #1A0F09;
-    --accent-soft: rgba(240, 128, 79, .15);
-    --ok: #5CC296;
-    --warn: #E0A84A;
-    --danger: #F07A66;
-    --danger-soft: rgba(240, 122, 102, .12);
-    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -12px rgba(0, 0, 0, .6);
-    --shadow-lift: 0 2px 4px rgba(0, 0, 0, .3), 0 18px 40px -14px rgba(0, 0, 0, .7);
+    --bg: #1A1611;
+    --glow-1: transparent;
+    --glow-2: transparent;
+    --glow-3: transparent;
+    --surface: #241F18;
+    --surface-solid: #241F18;
+    --surface-hover: #2B251D;
+    --ink: #F6EEE2;
+    --ink-2: #CFC2B1;
+    --muted: #A09282;
+    --line: rgba(255, 255, 255, .08);
+    --line-strong: rgba(255, 255, 255, .16);
+    --accent: hsl(var(--h) 90% 68%);
+    --accent-2: hsl(calc(var(--h) + 38) 85% 64%);
+    --accent-ink: #0B1220;
+    --accent-soft: hsl(var(--h) 90% 68% / .15);
+    --ok: #4ADE80;
+    --warn: #FBBF24;
+    --danger: #F87171;
+    --danger-soft: rgba(248, 113, 113, .12);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+    --shadow-lift: 0 1px 3px rgba(0, 0, 0, .4), 0 4px 12px -4px rgba(0, 0, 0, .5);
     color-scheme: dark;
   }
 
@@ -93,27 +97,9 @@
     min-height: 100vh;
     background: var(--bg);
     color: var(--ink);
-    font: 15px/1.5 var(--sans);
+    font: 16px/1.5 var(--sans);
     -webkit-font-smoothing: antialiased;
     transition: background .4s var(--ease), color .4s var(--ease);
-  }
-  /* Soft drifting color field behind everything */
-  .aura { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
-  .aura i {
-    position: absolute; border-radius: 50%; filter: blur(80px);
-    animation: drift 28s ease-in-out infinite alternate;
-  }
-  .aura i:nth-child(1) { width: 520px; height: 520px; background: var(--glow-1); top: -160px; left: -120px; }
-  .aura i:nth-child(2) { width: 460px; height: 460px; background: var(--glow-2); top: 20%; right: -180px; animation-delay: -9s; }
-  .aura i:nth-child(3) { width: 420px; height: 420px; background: var(--glow-3); bottom: -200px; left: 20%; animation-delay: -18s; }
-  @keyframes drift {
-    from { transform: translate3d(0, 0, 0) scale(1); }
-    to   { transform: translate3d(40px, 30px, 0) scale(1.08); }
-  }
-  /* Subtle paper grain */
-  .grain {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .35; mix-blend-mode: soft-light;
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.5'/></svg>");
   }
 
   .shell {
@@ -131,7 +117,7 @@
   .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -.01em; }
   .brand-mark {
     width: 26px; height: 26px; border-radius: 50%; background: var(--accent);
-    display: grid; place-items: center; box-shadow: 0 4px 14px -4px var(--accent);
+    display: grid; place-items: center;
   }
   .brand-mark svg { width: 14px; height: 14px; }
   .top-actions { display: flex; gap: 6px; align-items: center; }
@@ -147,16 +133,29 @@
   }
 
   /* ---------- Hero ---------- */
-  .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
+  .hero {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 20px;
+    padding: 26px 26px 24px; border-radius: 24px; color: #fff;
+    background: linear-gradient(120deg, hsl(var(--h) 80% 52%), hsl(calc(var(--h) + 38) 78% 58%), hsl(calc(var(--h) - 20) 80% 55%));
+    background-size: 220% 220%; animation: sweep 14s ease-in-out infinite alternate;
+    box-shadow: 0 14px 34px -16px hsl(var(--h) 80% 45% / .7);
+    transition: box-shadow .4s var(--ease);
+  }
+  @keyframes sweep { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+  .hero .eyebrow { color: rgba(255, 255, 255, .82); }
+  .hero .subtitle { color: rgba(255, 255, 255, .9); }
+  .hero .ring .track { stroke: rgba(255, 255, 255, .28); }
+  .hero .ring .fill, .hero .ring.complete .fill { stroke: #fff; }
+  .hero .ring-label small { color: rgba(255, 255, 255, .8); }
   .eyebrow {
-    font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 6px;
+    font-size: 13px; font-weight: 500;
+    color: var(--muted); margin-bottom: 6px;
   }
   h1 {
-    font-family: var(--serif); font-weight: 400; font-size: clamp(44px, 9vw, 64px);
-    line-height: .95; letter-spacing: -.02em; margin: 0;
+    font-weight: 800; font-size: clamp(32px, 6.5vw, 42px);
+    line-height: 1.1; letter-spacing: -.02em; margin: 0;
   }
-  h1 em { font-style: italic; color: var(--ink-2); }
+  h1 em { font-style: normal; }
   .subtitle { margin: 12px 0 0; color: var(--ink-2); font-size: 15px; }
 
   .ring { position: relative; width: 76px; height: 76px; flex: none; }
@@ -170,19 +169,55 @@
   .ring.complete .fill { stroke: var(--ok); }
   .ring-label {
     position: absolute; inset: 0; display: grid; place-items: center;
-    font-family: var(--serif); font-size: 24px; line-height: 1;
+    font-size: 18px; font-weight: 600; line-height: 1;
   }
   .ring-label small { display: block; font-family: var(--sans); font-size: 10px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; text-align: center; }
 
   /* ---------- Cards ---------- */
   .card {
     background: var(--surface);
-    backdrop-filter: blur(18px) saturate(1.2);
-    -webkit-backdrop-filter: blur(18px) saturate(1.2);
     border: 1px solid var(--line);
-    border-radius: 22px;
+    border-radius: 18px;
     box-shadow: var(--shadow);
   }
+
+  /* ---------- Lists ---------- */
+  .lists {
+    display: flex; gap: 6px; align-items: center; overflow-x: auto;
+    margin: 0 -16px 14px; padding: 2px 16px 4px; scrollbar-width: none;
+  }
+  .lists::-webkit-scrollbar { display: none; }
+  .list-tab {
+    flex: none; display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px;
+    border-radius: 999px; font-size: 14px; font-weight: 500; white-space: nowrap; color: var(--ink-2);
+    background: var(--surface); border: 1px solid var(--line); transition: background .2s, color .2s;
+  }
+  .list-tab:hover { color: var(--ink); background: var(--surface-hover); }
+  .list-tab[aria-current="true"] {
+    background: linear-gradient(120deg, var(--accent), var(--accent-2)); color: #fff; border-color: transparent;
+    box-shadow: 0 6px 16px -8px var(--accent);
+  }
+  .list-tab .dot { width: 8px; height: 8px; border-radius: 50%; background: hsl(var(--tab-h) 75% 55%); }
+  .list-tab[aria-current="true"] .dot { background: #fff; }
+  .list-tab { transition: background .2s, color .2s, transform .2s var(--ease); }
+  .list-tab:active { transform: scale(.96); }
+  .list-tab .count { font-size: 11px; opacity: .65; font-variant-numeric: tabular-nums; }
+  .list-add { color: var(--muted); background: transparent; border-style: dashed; border-color: var(--line-strong); }
+  .list-add svg { width: 14px; height: 14px; }
+  .list-more {
+    flex: none; width: 30px; height: 34px; margin-left: -4px; border-radius: 10px;
+    display: grid; place-items: center; color: var(--muted); transition: background .2s, color .2s;
+  }
+  .list-more:hover { color: var(--ink); background: var(--surface); }
+  .list-more svg { width: 16px; height: 16px; }
+  .menu {
+    position: fixed; z-index: 20; min-width: 170px; padding: 6px; border-radius: 14px;
+    background: var(--surface-solid); display: flex; flex-direction: column; box-shadow: var(--shadow-lift);
+  }
+  .menu button { text-align: left; padding: 9px 12px; border-radius: 9px; font-size: 14px; }
+  .menu button:hover { background: var(--line); }
+  .menu .danger { color: var(--danger); }
+  .menu .danger:hover { background: var(--danger-soft); }
 
   /* ---------- Composer ---------- */
   .composer { padding: 8px 8px 8px 20px; display: flex; align-items: center; gap: 8px; transition: box-shadow .3s var(--ease), border-color .3s; }
@@ -208,10 +243,9 @@
   .add-btn {
     height: 42px; padding: 0 18px; border-radius: 14px; background: var(--accent); color: var(--accent-ink);
     font-weight: 600; font-size: 14px; flex: none;
-    box-shadow: 0 6px 18px -6px var(--accent);
     transition: transform .2s var(--ease), opacity .2s, box-shadow .2s;
   }
-  .add-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -8px var(--accent); }
+  .add-btn:hover { filter: brightness(1.08); }
   .add-btn:active { transform: translateY(0) scale(.97); }
   .add-btn:disabled { opacity: .45; transform: none; box-shadow: none; cursor: default; }
   .clear-due { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: var(--accent); margin-left: -6px; }
@@ -223,7 +257,6 @@
   .segmented {
     position: relative; display: grid; grid-template-columns: repeat(3, 1fr);
     padding: 4px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   }
   .segmented .indicator {
     position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3);
@@ -246,8 +279,8 @@
     padding: 16px 14px 16px 16px; cursor: pointer;
     transition: background .2s, box-shadow .3s var(--ease), transform .2s var(--ease);
   }
-  .item:hover { background: var(--surface-hover); box-shadow: var(--shadow-lift); }
-  .item.open { background: var(--surface-hover); box-shadow: var(--shadow-lift); cursor: default; }
+  .item:hover { border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+  .item.open { border-color: var(--accent); box-shadow: var(--shadow-lift), 0 0 0 3px var(--accent-soft); cursor: default; transform: none; }
   .item.leaving { animation: leave .28s var(--ease) forwards; pointer-events: none; }
   @keyframes leave { to { opacity: 0; transform: translateX(24px) scale(.98); } }
 
@@ -320,6 +353,54 @@
   .danger-btn svg { width: 15px; height: 15px; }
   .hint { font-size: 12px; color: var(--muted); }
 
+  /* ---------- Steps ---------- */
+  .steps { display: flex; flex-direction: column; gap: 4px; }
+  .step-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .step { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 2px 4px 2px 2px; border-radius: 10px; }
+  .step:hover { background: var(--line); }
+  .step-check {
+    width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid var(--line-strong);
+    display: grid; place-items: center; transition: background .2s, border-color .2s;
+  }
+  .step-check:hover { border-color: var(--accent); }
+  .step-check svg { width: 11px; height: 11px; }
+  .step-check path { fill: none; stroke: #fff; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+  .step.done .step-check { background: var(--ok); border-color: var(--ok); }
+  .step.done .step-check path { opacity: 1; }
+  .step-title {
+    min-width: 0; border: 0; outline: 0; background: transparent; padding: 5px 0; font-size: 14px;
+    border-bottom: 1.5px solid transparent;
+  }
+  .step-title:focus { border-bottom-color: var(--accent); }
+  .step.done .step-title { color: var(--muted); text-decoration: line-through; }
+  .step-del {
+    width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; color: var(--muted);
+    opacity: 0; transition: opacity .2s, background .2s, color .2s;
+  }
+  .step:hover .step-del, .step-del:focus-visible { opacity: 1; }
+  @media (hover: none) { .step-del { opacity: .6; } }
+  .step-del:hover { color: var(--danger); background: var(--danger-soft); }
+  .step-del svg { width: 12px; height: 12px; }
+  .step-add {
+    border: 0; outline: 0; background: transparent; font-size: 14px; padding: 8px 2px 6px;
+    border-bottom: 1px dashed var(--line-strong);
+  }
+  .step-add:focus { border-bottom: 1px solid var(--accent); }
+  .step-add::placeholder { color: var(--muted); }
+  .breakdown-btn {
+    align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px;
+    border-radius: 12px; background: var(--accent-soft); color: var(--accent); font-size: 14px; font-weight: 600;
+    transition: transform .2s var(--ease);
+  }
+  .breakdown-btn:hover { transform: translateY(-1px); }
+  .breakdown-btn svg { width: 16px; height: 16px; }
+  .step.enter { animation: stepIn .4s var(--ease) both; }
+  @keyframes stepIn { from { opacity: 0; transform: translateX(-10px); } }
+  .bar { width: 34px; height: 4px; border-radius: 4px; background: var(--line-strong); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); border-radius: inherit; transition: width .5s var(--ease); }
+  .chip.steps-done .bar i { background: var(--ok); }
+  .chip.steps-done { background: rgba(47, 138, 98, .14); color: var(--ok); }
+
   /* ---------- Section label ---------- */
   .section-label {
     font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
@@ -329,9 +410,9 @@
   /* ---------- Empty + loading ---------- */
   .empty { text-align: center; padding: 56px 20px 40px; }
   .empty svg { width: 120px; height: 120px; margin-bottom: 10px; }
-  .empty h2 { font-family: var(--serif); font-weight: 400; font-size: 30px; margin: 0 0 6px; }
+  .empty h2 { font-weight: 800; font-size: 22px; margin: 0 0 6px; }
   .empty p { margin: 0; color: var(--ink-2); }
-  .skeleton { height: 58px; border-radius: 22px; background: linear-gradient(90deg, var(--line) 0%, var(--line-strong) 50%, var(--line) 100%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; opacity: .6; }
+  .skeleton { height: 58px; border-radius: 18px; background: linear-gradient(90deg, var(--line) 0%, var(--line-strong) 50%, var(--line) 100%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; opacity: .6; }
   @keyframes shimmer { to { background-position: -200% 0; } }
 
   .footer-note { text-align: center; margin-top: 40px; font-size: 12px; color: var(--muted); }
@@ -339,8 +420,8 @@
 
   /* ---------- Auth ---------- */
   .auth { min-height: calc(100vh - 140px); display: grid; place-items: center; }
-  .auth-card { width: 100%; max-width: 420px; padding: 36px 32px 28px; border-radius: 28px; }
-  .auth h1 { font-size: 52px; margin-bottom: 10px; }
+  .auth-card { width: 100%; max-width: 420px; padding: 32px 28px 26px; border-radius: 16px; }
+  .auth h1 { font-size: 34px; font-weight: 800; margin-bottom: 10px; }
   .auth .lede { color: var(--ink-2); margin: 0 0 28px; }
   .auth label { display: block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
   .auth input {
@@ -384,8 +465,6 @@
 </style>
 </head>
 <body>
-<div class="aura" aria-hidden="true"><i></i><i></i><i></i></div>
-<div class="grain" aria-hidden="true"></div>
 
 <div class="shell">
   <header class="topbar">
@@ -434,6 +513,8 @@
       </div>
     </section>
 
+    <nav class="lists" id="lists" aria-label="Your lists"></nav>
+
     <form class="card composer" id="composer" autocomplete="off">
       <span class="plus" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
       <input type="text" id="newTitle" placeholder="What needs doing?" maxlength="500" aria-label="New to-do">
@@ -462,8 +543,13 @@
     <ul class="list" id="list" aria-live="polite"></ul>
     <div id="empty" hidden></div>
 
-    <p class="footer-note">Press <kbd>N</kbd> to add · open a to-do and click its title to rename it</p>
+    <p class="footer-note">Press <kbd>N</kbd> to add · open a to-do to break it down or rename it</p>
   </main>
+</div>
+
+<div class="card menu" id="listMenu" role="menu" hidden>
+  <button type="button" role="menuitem" data-act="rename">Rename list</button>
+  <button type="button" role="menuitem" data-act="delete" class="danger">Delete list</button>
 </div>
 
 <div class="toast" id="toast" role="status"><span id="toastText"></span><button id="toastAction" hidden>Undo</button></div>
@@ -471,6 +557,7 @@
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./config.js";
+import { breakDown } from "./breakdown.js";
 
 const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const $ = (id) => document.getElementById(id);
@@ -478,13 +565,24 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const state = {
   user: null,
+  lists: [],
+  listId: null,
   todos: [],
   loading: true,
   filter: "all",
   openId: null,
   editingId: null,
   fresh: new Set(),
+  freshSteps: new Set(),
 };
+
+// Each list gets its own color, by its place in the row.
+const HUES = [221, 262, 158, 24, 330, 188, 45];
+const hueOf = (list) => HUES[Math.max(0, state.lists.indexOf(list)) % HUES.length];
+function applyListColor() {
+  const list = state.lists.find((l) => l.id === state.listId);
+  document.documentElement.style.setProperty("--h", list ? hueOf(list) : HUES[0]);
+}
 
 /* ---------------- Icons ---------------- */
 const ICONS = {
@@ -493,6 +591,11 @@ const ICONS = {
   cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>',
   note: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></svg>',
+  steps: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>',
 };
 
 function el(tag, props = {}, ...children) {
@@ -598,6 +701,8 @@ function setUser(user) {
   if (user) {
     $("who").textContent = user.email;
     state.todos = [];
+    state.lists = [];
+    state.listId = null;
     state.loading = true;
     renderHero();
     render();
@@ -612,25 +717,48 @@ function setUser(user) {
 sb.auth.onAuthStateChange((_event, session) => setTimeout(() => setUser(session?.user ?? null), 0));
 
 /* ---------------- Data ---------------- */
+const DEFAULT_LISTS = ["School", "Goals", "Chores"];
+const byPosition = (a, b) => a.position - b.position || a.created_at.localeCompare(b.created_at);
+
 async function loadTodos() {
-  const { data, error } = await sb.from("todos").select("*");
+  const [lists, todos] = await Promise.all([sb.from("lists").select("*"), sb.from("todos").select("*")]);
+  const error = lists.error || todos.error;
+  if (error) { state.loading = false; toast("Couldn't load your to-dos. " + error.message); render(); return; }
+  state.lists = lists.data.sort(byPosition);
+  state.todos = todos.data;
+  if (!state.lists.length) await makeDefaultLists();
+  // To-dos made before lists existed go in the first list.
+  const first = state.lists[0]?.id;
+  if (first && state.todos.some((t) => !t.list_id)) {
+    const { error } = await sb.from("todos").update({ list_id: first }).is("list_id", null);
+    if (!error) state.todos.forEach((t) => { t.list_id ??= first; });
+  }
   state.loading = false;
-  if (error) { toast("Couldn't load your to-dos. " + error.message); render(); return; }
-  state.todos = data;
+  const saved = storedListId();
+  state.listId = state.lists.some((l) => l.id === saved) ? saved : first ?? null;
+  renderLists();
   render();
 }
 
+async function makeDefaultLists() {
+  const rows = DEFAULT_LISTS.map((name, position) => ({ id: crypto.randomUUID(), name, position }));
+  const { data, error } = await sb.from("lists").insert(rows).select();
+  if (error) return toast("Couldn't set up your lists. " + error.message);
+  state.lists = data.sort(byPosition);
+}
+
 async function addTodo(title, due_date) {
+  if (!state.listId) return toast("Make a list first.");
   const now = new Date().toISOString();
   const todo = {
-    id: crypto.randomUUID(), title, notes: null, is_complete: false,
-    due_date: due_date || null, created_at: now, updated_at: now,
+    id: crypto.randomUUID(), title, notes: null, is_complete: false, list_id: state.listId,
+    parent_id: null, position: 0, due_date: due_date || null, created_at: now, updated_at: now,
   };
   state.todos.push(todo);
   state.fresh.add(todo.id);
   if (state.filter === "done") setFilter("all");
   render();
-  const { error } = await sb.from("todos").insert({ id: todo.id, title, due_date: todo.due_date });
+  const { error } = await sb.from("todos").insert({ id: todo.id, title, list_id: todo.list_id, due_date: todo.due_date });
   if (error) {
     state.todos = state.todos.filter((t) => t.id !== todo.id);
     render();
@@ -652,9 +780,35 @@ async function patchTodo(id, fields, { rerender = true } = {}) {
   }
 }
 
+// Adds steps under a to-do, after any it already has.
+async function addSteps(parent, titles, { focusAdd = false } = {}) {
+  const now = new Date().toISOString();
+  const start = stepsOf(parent.id).reduce((n, s) => Math.max(n, s.position + 1), 0);
+  const rows = titles.map((title, i) => ({
+    id: crypto.randomUUID(), title, list_id: parent.list_id, parent_id: parent.id, position: start + i,
+  }));
+  state.todos.push(...rows.map((r) => ({ ...r, notes: null, is_complete: false, due_date: null, created_at: now, updated_at: now })));
+  rows.forEach((r) => state.freshSteps.add(r.id));
+  render();
+  state.freshSteps.clear();
+  if (focusAdd) $("list").querySelector(`[data-id="${parent.id}"] .step-add`)?.focus();
+  const { error } = await sb.from("todos").insert(rows);
+  if (error) {
+    const added = rows.map((r) => r.id);
+    state.todos = state.todos.filter((t) => !added.includes(t.id));
+    render();
+    toast("Couldn't save that. " + error.message);
+  }
+}
+
 async function deleteTodos(ids, message) {
-  const removed = state.todos.filter((t) => ids.includes(t.id));
+  // A to-do's steps go with it (the database cascades), so keep them for Undo too.
+  // Parents come first so Undo can insert them before their steps.
+  const removed = state.todos
+    .filter((t) => ids.includes(t.id) || ids.includes(t.parent_id))
+    .sort((a, b) => !!a.parent_id - !!b.parent_id);
   if (!removed.length) return;
+  ids = removed.map((t) => t.id);
   const nodes = [...$("list").querySelectorAll(".item")].filter((n) => ids.includes(n.dataset.id));
   nodes.forEach((n) => n.classList.add("leaving"));
   await new Promise((r) => setTimeout(r, reduceMotion ? 0 : 260));
@@ -711,8 +865,9 @@ function renderHero() {
 }
 
 function renderProgress() {
-  const total = state.todos.length;
-  const done = state.todos.filter((t) => t.is_complete).length;
+  const items = state.todos.filter(inList);
+  const total = items.length;
+  const done = items.filter((t) => t.is_complete).length;
   const open = total - done;
   const pct = total ? Math.round((done / total) * 100) : 0;
   const C = 2 * Math.PI * 34;
@@ -722,8 +877,8 @@ function renderProgress() {
   $("ringPct").textContent = pct + "%";
   $("ring").classList.toggle("complete", total > 0 && open === 0);
 
-  const overdue = state.todos.filter((t) => !t.is_complete && dueInfo(t.due_date)?.cls === "overdue").length;
-  const today = state.todos.filter((t) => !t.is_complete && t.due_date && dueInfo(t.due_date).cls === "today").length;
+  const overdue = items.filter((t) => !t.is_complete && dueInfo(t.due_date)?.cls === "overdue").length;
+  const today = items.filter((t) => !t.is_complete && t.due_date && dueInfo(t.due_date).cls === "today").length;
   let sub;
   if (state.loading) sub = "Gathering your list…";
   else if (!total) sub = "A blank page. What matters today?";
@@ -739,6 +894,124 @@ function renderProgress() {
   $("filters").querySelector('[data-count="active"]').textContent = open || "";
   $("filters").querySelector('[data-count="done"]').textContent = done || "";
   $("clearDone").hidden = !done;
+  renderLists();
+}
+
+/* ---------------- Lists ---------------- */
+function storedListId() { try { return localStorage.getItem("listId"); } catch { return null; } }
+function currentList() { return state.lists.find((l) => l.id === state.listId); }
+// Top-level to-dos in the open list (steps live under their parent).
+function inList(t) { return t.list_id === state.listId && !t.parent_id; }
+function stepsOf(id) { return state.todos.filter((t) => t.parent_id === id).sort(byPosition); }
+
+function selectList(id) {
+  state.listId = id;
+  state.openId = null;
+  state.editingId = null;
+  try { localStorage.setItem("listId", id); } catch {}
+  renderLists();
+  render();
+}
+
+function renderLists() {
+  if (state.loading) return $("lists").replaceChildren();
+  const tabs = [];
+  for (const l of state.lists) {
+    const active = l.id === state.listId;
+    const open = state.todos.filter((t) => t.list_id === l.id && !t.parent_id && !t.is_complete).length;
+    tabs.push(el("button", {
+      type: "button", class: "list-tab", "aria-current": String(active), style: `--tab-h: ${hueOf(l)}`,
+      title: active ? "Rename or delete this list" : null, "aria-haspopup": active ? "menu" : null,
+      // Clicking the open list's tab opens its menu, same as the ⋯ button.
+      onclick: (e) => {
+        if (!active) return selectList(l.id);
+        e.stopPropagation();
+        toggleListMenu(e.currentTarget);
+      },
+    }, el("span", { class: "dot" }), l.name, open ? el("span", { class: "count" }, String(open)) : null));
+    if (active) {
+      tabs.push(el("button", {
+        type: "button", class: "list-more", html: ICONS.more, "aria-label": `Options for ${l.name}`, "aria-haspopup": "menu",
+        onclick: (e) => { e.stopPropagation(); toggleListMenu(e.currentTarget); },
+      }));
+    }
+  }
+  const add = el("button", { type: "button", class: "list-tab list-add", html: ICONS.plus, onclick: newList });
+  add.append("New list");
+  tabs.push(add);
+  $("lists").replaceChildren(...tabs);
+  applyListColor();
+}
+
+function toggleListMenu(anchor) {
+  const menu = $("listMenu");
+  if (!menu.hidden) return closeListMenu();
+  menu.hidden = false;
+  const r = anchor.getBoundingClientRect();
+  menu.style.top = `${r.bottom + 6}px`;
+  menu.style.left = `${Math.max(12, Math.min(r.left, innerWidth - menu.offsetWidth - 12))}px`;
+}
+function closeListMenu() { $("listMenu").hidden = true; }
+$("listMenu").addEventListener("click", (e) => {
+  const act = e.target.closest("button")?.dataset.act;
+  closeListMenu();
+  if (act === "rename") renameList();
+  if (act === "delete") deleteList();
+});
+document.addEventListener("click", (e) => { if (!e.target.closest("#listMenu")) closeListMenu(); });
+addEventListener("scroll", closeListMenu, { passive: true });
+$("lists").addEventListener("scroll", closeListMenu, { passive: true });
+
+async function newList() {
+  const name = prompt("Name your new list")?.trim().slice(0, 60);
+  if (!name) return;
+  const list = {
+    id: crypto.randomUUID(), name, created_at: new Date().toISOString(),
+    position: state.lists.reduce((n, l) => Math.max(n, l.position + 1), 0),
+  };
+  const prevId = state.listId;
+  state.lists.push(list);
+  selectList(list.id);
+  const { error } = await sb.from("lists").insert({ id: list.id, name, position: list.position });
+  if (error) {
+    state.lists = state.lists.filter((l) => l.id !== list.id);
+    selectList(prevId);
+    toast("Couldn't make that list. " + error.message);
+  }
+}
+
+async function renameList() {
+  const list = currentList();
+  if (!list) return;
+  const name = prompt("Rename this list", list.name)?.trim().slice(0, 60);
+  if (!name || name === list.name) return;
+  const prev = list.name;
+  list.name = name;
+  renderLists();
+  const { error } = await sb.from("lists").update({ name }).eq("id", list.id);
+  if (error) { list.name = prev; renderLists(); toast("Couldn't rename that list. " + error.message); }
+}
+
+async function deleteList() {
+  const list = currentList();
+  if (!list) return;
+  if (state.lists.length === 1) return toast("You need at least one list.");
+  const count = state.todos.filter((t) => t.list_id === list.id && !t.parent_id).length;
+  const things = count === 1 ? "1 to-do" : `${count} to-dos`;
+  if (!confirm(count ? `Delete “${list.name}” and its ${things}?` : `Delete “${list.name}”?`)) return;
+  const removed = state.todos.filter((t) => t.list_id === list.id);
+  state.lists = state.lists.filter((l) => l.id !== list.id);
+  state.todos = state.todos.filter((t) => t.list_id !== list.id);
+  selectList(state.lists[0].id);
+  const { error } = await sb.from("lists").delete().eq("id", list.id);
+  if (error) {
+    state.lists.push(list);
+    state.lists.sort(byPosition);
+    state.todos.push(...removed);
+    selectList(list.id);
+    return toast("Couldn't delete that list. " + error.message);
+  }
+  toast(`Deleted “${list.name}”`);
 }
 
 /* ---------------- List ---------------- */
@@ -787,12 +1060,19 @@ function renderItem(t) {
     });
   }
 
+  const steps = stepsOf(t.id);
+  const stepsDone = steps.filter((s) => s.is_complete).length;
+  const stepsChip = (n, total) => {
+    const c = chip(n === total ? "steps-done" : "", ICONS.steps, `${n} of ${total} steps`);
+    c.append(el("span", { class: "bar" }, el("i", { style: `width: ${Math.round((n / total) * 100)}%` })));
+    return c;
+  };
+  const chip = (cls, icon, label) => { const c = el("span", { class: `chip ${cls}`, html: icon }); c.append(label); return c; };
   const meta = el("div", { class: "meta" },
-    due ? el("span", { class: `chip ${due.cls}`, html: ICONS.cal }) : null,
-    t.notes ? el("span", { class: "chip", html: ICONS.note }) : null,
+    due ? chip(due.cls, ICONS.cal, due.label) : null,
+    steps.length ? stepsChip(stepsDone, steps.length) : null,
+    t.notes ? chip("", ICONS.note, "Notes") : null,
   );
-  if (due) meta.firstChild.append(due.label);
-  if (t.notes) meta.lastChild.append("Notes");
 
   const notes = el("textarea", { class: "notes", placeholder: "Add notes…", rows: 3, "aria-label": "Notes" });
   notes.value = t.notes ?? "";
@@ -807,6 +1087,7 @@ function renderItem(t) {
   const panel = el("div", { class: "panel" },
     el("div", {},
       el("div", { class: "panel-inner", onclick: (e) => e.stopPropagation() },
+        renderSteps(t, steps),
         notes,
         el("div", { class: "panel-row" },
           el("label", { class: "field" }, "Due", dateInput),
@@ -833,6 +1114,59 @@ function renderItem(t) {
     }),
   );
   return li;
+}
+
+function renderSteps(t, steps) {
+  const wrap = el("div", { class: "steps" });
+  if (steps.length) {
+    let delay = 0;
+    wrap.append(el("ul", { class: "step-list" }, ...steps.map((s) => {
+      const li = renderStep(s);
+      if (state.freshSteps.has(s.id) && !reduceMotion) { li.classList.add("enter"); li.style.animationDelay = `${delay++ * 70}ms`; }
+      return li;
+    })));
+  } else {
+    const btn = el("button", {
+      type: "button", class: "breakdown-btn", html: ICONS.spark,
+      onclick: () => { addSteps(t, breakDown(t.title)); toast("Here’s a plan. Edit any step to make it yours."); },
+    });
+    btn.append("Break it down");
+    wrap.append(btn);
+  }
+  const add = el("input", {
+    class: "step-add", maxlength: 500, "aria-label": "Add a step",
+    placeholder: steps.length ? "Add a step" : "…or add your own first step",
+  });
+  add.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && add.value.trim()) addSteps(t, [add.value.trim()], { focusAdd: true });
+  });
+  wrap.append(add);
+  return wrap;
+}
+
+function renderStep(s) {
+  const title = el("input", { class: "step-title", value: s.title, maxlength: 500, "aria-label": "Step" });
+  title.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") title.blur();
+    if (e.key === "Escape") { title.value = s.title; title.blur(); }
+  });
+  title.addEventListener("blur", () => {
+    const v = title.value.trim();
+    if (!v) title.value = s.title;
+    else if (v !== s.title) patchTodo(s.id, { title: v }, { rerender: false });
+  });
+  return el("li", { class: `step${s.is_complete ? " done" : ""}` },
+    el("button", {
+      type: "button", class: "step-check", html: ICONS.check,
+      "aria-label": s.is_complete ? "Mark step as not done" : "Mark step as done",
+      onclick: () => patchTodo(s.id, { is_complete: !s.is_complete }),
+    }),
+    title,
+    el("button", {
+      type: "button", class: "step-del", html: ICONS.x, "aria-label": "Delete step",
+      onclick: () => deleteTodos([s.id], "Step deleted"),
+    }),
+  );
 }
 
 function toggleOpen(id) {
@@ -874,8 +1208,8 @@ function render() {
     return;
   }
 
-  const open = state.todos.filter((t) => !t.is_complete).sort(sortOpen);
-  const done = state.todos.filter((t) => t.is_complete).sort(sortDone);
+  const open = state.todos.filter((t) => inList(t) && !t.is_complete).sort(sortOpen);
+  const done = state.todos.filter((t) => inList(t) && t.is_complete).sort(sortDone);
   const nodes = [];
   if (state.filter !== "done") nodes.push(...open.map(renderItem));
   if (state.filter === "all" && done.length && open.length) nodes.push(el("li", { class: "section-label" }, "Completed"));
@@ -905,8 +1239,9 @@ function render() {
 }
 
 function emptyState() {
-  const total = state.todos.length;
-  const allDone = total > 0 && state.todos.every((t) => t.is_complete);
+  const items = state.todos.filter(inList);
+  const total = items.length;
+  const allDone = total > 0 && items.every((t) => t.is_complete);
   const [title, body] =
     state.filter === "done" ? ["Nothing finished yet", "Tick something off — it’ll land here."]
     : allDone || (state.filter === "active" && total) ? ["All clear", "You’ve done everything on your list."]
@@ -935,7 +1270,7 @@ $("filters").addEventListener("click", (e) => {
   if (b) setFilter(b.dataset.filter);
 });
 $("clearDone").addEventListener("click", () => {
-  const ids = state.todos.filter((t) => t.is_complete).map((t) => t.id);
+  const ids = state.todos.filter((t) => inList(t) && t.is_complete).map((t) => t.id);
   deleteTodos(ids, `Cleared ${ids.length} completed`);
 });
 
@@ -970,7 +1305,8 @@ document.addEventListener("keydown", (e) => {
     e.preventDefault();
     newTitle.focus();
   }
-  if (e.key === "Escape" && state.openId && !state.editingId) toggleOpen(state.openId);
+  if (e.key === "Escape") closeListMenu();
+  if (e.key === "Escape" && !typing && state.openId && !state.editingId) toggleOpen(state.openId);
 });
 
 // Refresh relative dates ("Today", greeting) when the tab regains focus.

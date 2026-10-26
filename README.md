@@ -14,6 +14,7 @@ sign-up confirmation emails link back here.
 ## Files
 
 - `index.html` — the whole app (UI, styles, logic)
+- `breakdown.js` — "Break it down": hand-written step templates picked by the goal's words
 - `config.js` — project URL and **publishable** key (safe to be public; Row Level Security protects data)
 - `supabase/migrations/` — database schema
 - `.db-password` — database password (git-ignored, never commit)
