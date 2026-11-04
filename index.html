@@ -491,13 +491,26 @@
   .toast button:hover { background: rgba(255, 255, 255, .1); }
 
   @media (max-width: 520px) {
-    .topbar { margin-bottom: 28px; }
+    /* Main screen, phone first: a shorter header so to-dos show sooner, and 44px tap targets. */
+    .shell { padding-top: max(16px, env(safe-area-inset-top)); }
+    .topbar { margin-bottom: 14px; }
+    .icon-btn { width: 44px; height: 44px; }
     .who { display: none; }
-    .ring { width: 64px; height: 64px; }
+    .hero { padding: 16px 18px; border-radius: 20px; margin-bottom: 14px; align-items: center; }
+    .hero .eyebrow { font-size: 12px; margin-bottom: 2px; }
+    .hero h1 { font-size: 26px; }
+    .hero .subtitle { margin-top: 4px; font-size: 14px; }
+    .ring { width: 54px; height: 54px; }
+    .ring-label { font-size: 15px; }
+    .ring-label small { font-size: 8px; }
+    .list-tab { height: 44px; padding: 0 16px; font-size: 15px; }
+    .list-more { width: 36px; height: 44px; }
+    .lists { margin-bottom: 12px; }
     .composer { flex-wrap: wrap; padding: 8px 8px 8px 16px; }
     .composer input[type="text"] { flex-basis: calc(100% - 40px); }
     .composer .spacer { flex: 1; }
-    .toolbar { flex-wrap: wrap; }
+    .toolbar { flex-wrap: wrap; margin: 14px 0 10px; }
+    .toolbar:not(:has(> :not([hidden]))) { margin: 16px 0 0; }
     .segmented button { padding: 7px 10px; }
     .auth-card { padding: 28px 22px 22px; }
   }
