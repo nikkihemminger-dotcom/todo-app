@@ -513,6 +513,50 @@
     .toolbar:not(:has(> :not([hidden]))) { margin: 16px 0 0; }
     .segmented button { padding: 7px 10px; }
     .auth-card { padding: 28px 22px 22px; }
+
+    /* No zooming: iPhone zooms into any text box smaller than 16px when you tap it. */
+    .auth input, .notes, .step-title, .step-add, .list-input,
+    .field input[type="date"], .ask-due input[type="date"] { font-size: 16px; }
+
+    /* Sign in / sign up: start near the top so the keyboard doesn't cover the button. */
+    .auth { min-height: 0; place-items: start center; padding-top: 8px; }
+    .auth h1 { font-size: 28px; }
+    .auth .lede { margin-bottom: 20px; }
+    .auth input { margin-bottom: 12px; }
+    .auth .switch button { min-height: 44px; padding: 0 6px; }
+
+    /* Adding a to-do: the add box sits at the bottom of the screen, in thumb reach. */
+    .shell { padding-bottom: 170px; }
+    .composer {
+      position: fixed; z-index: 5; left: 12px; right: 12px;
+      bottom: max(12px, env(safe-area-inset-bottom)); box-shadow: var(--shadow-lift);
+    }
+    .pill, .add-btn { height: 44px; }
+    .clear-due { width: 44px; height: 44px; margin-left: -12px; }
+
+    /* A to-do and its steps: every tap target at least 44px. Small circles keep their look
+       but get a bigger invisible tap area around them. */
+    .check, .step-check { position: relative; }
+    .check::before, .step-check::before { content: ""; position: absolute; inset: -10px; }
+    .step-check::before { inset: -13px; }
+    .expand { width: 44px; height: 44px; margin: -8px -8px -8px 0; }
+    .step { min-height: 44px; }
+    .step-title { padding: 10px 0; }
+    .step-del { width: 44px; height: 44px; }
+    .step-add { padding: 12px 2px 10px; }
+    .danger-btn, .text-btn, .replan-btn { min-height: 44px; }
+    .field input[type="date"] { height: 44px; }
+
+    /* Break it down: the question, date, and buttons stack to fit a phone. */
+    .breakdown-btn { height: 44px; }
+    .ask-due input[type="date"] { height: 44px; flex: 1 1 140px; }
+
+    /* Menus and messages: big rows to tap, and the Undo message sits above the add box. */
+    .menu button { min-height: 44px; font-size: 15px; }
+    .confirm-bar .danger-solid { min-height: 44px; }
+    .segmented button { min-height: 40px; }
+    .toast { bottom: calc(max(12px, env(safe-area-inset-bottom)) + 132px); }
+    .toast button { min-height: 44px; padding: 0 12px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
