@@ -134,6 +134,8 @@
   }
   .icon-btn:hover { background: var(--surface); color: var(--ink); }
   .icon-btn svg { width: 18px; height: 18px; }
+  .icon-btn.on { color: var(--accent); }
+  .icon-btn.on svg { fill: currentColor; }
   .who {
     font-size: 13px; color: var(--muted); max-width: 180px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -573,6 +575,9 @@
     </div>
     <div class="top-actions">
       <span class="who" id="who" hidden></span>
+      <button class="icon-btn" id="bellBtn" aria-label="Morning reminder" title="7:30 AM reminder" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      </button>
       <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Toggle theme">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
       </button>
@@ -655,7 +660,7 @@
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./config.js";
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, VAPID_PUBLIC_KEY } from "./config.js";
 import { breakDown } from "./breakdown.js";
 
 const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -805,8 +810,10 @@ function setUser(user) {
   $("authView").hidden = !!user;
   $("appView").hidden = !user;
   $("signOutBtn").hidden = !user;
+  $("bellBtn").hidden = !user;
   $("who").hidden = !user;
   if (user) {
+    refreshBell();
     $("who").textContent = user.email;
     state.todos = [];
     state.lists = [];
@@ -1630,6 +1637,75 @@ document.addEventListener("keydown", (e) => {
 
 // Lets phones install the site as an app (see sw.js).
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
+/* ---------------- Morning reminder (Spec 007) ---------------- */
+const canPush = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+const isInstalled = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+
+function keyBytes(s) {
+  const b64 = s.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - (s.length % 4)) % 4);
+  return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+}
+async function currentPush() {
+  if (!canPush) return null;
+  const reg = await navigator.serviceWorker.ready;
+  return reg.pushManager.getSubscription();
+}
+async function refreshBell() {
+  const sub = await currentPush().catch(() => null);
+  const on = !!sub && Notification.permission === "granted";
+  $("bellBtn").classList.toggle("on", on);
+  $("bellBtn").setAttribute("aria-pressed", String(on));
+}
+async function sendTestReminder() {
+  const { data: { session } } = await sb.auth.getSession();
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/morning-reminder?test=1`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${session.access_token}`, apikey: SUPABASE_PUBLISHABLE_KEY },
+  });
+  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || `Error ${res.status}`);
+}
+async function turnOnReminder() {
+  if (!canPush) {
+    return toast(isIOS && !isInstalled
+      ? "Open the app from your home screen icon to turn on reminders."
+      : "This browser can't show notifications.");
+  }
+  const permission = await Notification.requestPermission();
+  if (permission !== "granted") return toast("Notifications are off. You can allow them in your phone's Settings.");
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(VAPID_PUBLIC_KEY) });
+  const { endpoint, keys } = sub.toJSON();
+  const { error } = await sb.from("push_subscriptions").upsert({
+    endpoint, p256dh: keys.p256dh, auth: keys.auth,
+    time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Denver",
+  }, { onConflict: "endpoint" });
+  if (error) { await sub.unsubscribe(); return toast("Couldn't turn on the reminder. " + error.message); }
+  await refreshBell();
+  toast("You'll get your to-dos at 7:30 AM. Sending a test now.");
+  sendTestReminder().catch((e) => toast("The test didn't send. " + e.message));
+}
+async function turnOffReminder() {
+  const sub = await currentPush();
+  if (sub) {
+    await sb.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
+    await sub.unsubscribe();
+  }
+  await refreshBell();
+  toast("Morning reminder is off.");
+}
+$("bellBtn").addEventListener("click", async () => {
+  try {
+    if ($("bellBtn").classList.contains("on")) {
+      toast("Your 7:30 AM reminder is on.", { label: "Turn off", run: () => turnOffReminder().catch((e) => toast(e.message)) });
+    } else {
+      await turnOnReminder();
+    }
+  } catch (e) {
+    toast("Couldn't turn on the reminder. " + e.message);
+  }
+});
 
 // Refresh relative dates ("Today", greeting) when the tab regains focus.
 document.addEventListener("visibilitychange", () => {
