@@ -252,7 +252,7 @@
   .pill:hover { background: var(--accent-soft); color: var(--ink); }
   .pill svg { width: 16px; height: 16px; }
   .pill.set { background: var(--accent-soft); color: var(--accent); }
-  .pill input[type="date"] {
+  .pill input[type="date"], .pill input[type="time"] {
     position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; border: 0;
   }
   .add-btn {
@@ -356,10 +356,24 @@
   .notes::placeholder { color: var(--muted); }
   .panel-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .field { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
-  .field input[type="date"] {
+  .field input[type="date"], .field input[type="time"], .field select {
     border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 6px 10px; font-size: 13px; outline: 0;
+    color: var(--ink);
   }
-  .field input[type="date"]:focus { border-color: var(--accent); }
+  .field input[type="date"]:focus, .field input[type="time"]:focus, .field select:focus { border-color: var(--accent); }
+  .fields { display: flex; flex-wrap: wrap; gap: 10px; }
+
+  /* ---------- My goals (life areas) ---------- */
+  .area-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .area-head:first-child { margin-top: 4px; }
+  .area-head .area-count { letter-spacing: 0; text-transform: none; font-weight: 500; }
+  .area-add { list-style: none; }
+  .area-add input {
+    width: 100%; border: 0; outline: 0; background: transparent; font-size: 15px; padding: 10px 4px;
+    border-bottom: 1px dashed var(--line-strong);
+  }
+  .area-add input:focus { border-bottom: 1px solid var(--accent); }
+  .area-add input::placeholder { color: var(--muted); }
   .danger-btn {
     display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--danger);
     padding: 7px 12px; border-radius: 10px; transition: background .2s;
@@ -508,7 +522,8 @@
 
     /* No zooming: iPhone zooms into any text box smaller than 16px when you tap it. */
     .auth input, .notes, .step-title, .step-add, .list-input,
-    .field input[type="date"], .ask-due input[type="date"] { font-size: 16px; }
+    .field input[type="date"], .field input[type="time"], .field select, .area-add input,
+    .ask-due input[type="date"] { font-size: 16px; }
 
     /* Sign in / sign up: start near the top so the keyboard doesn't cover the button. */
     .auth { min-height: 0; place-items: start center; padding-top: 8px; }
@@ -537,7 +552,8 @@
     .step-del { width: 44px; height: 44px; }
     .step-add { padding: 12px 2px 10px; }
     .danger-btn, .text-btn, .replan-btn { min-height: 44px; }
-    .field input[type="date"] { height: 44px; }
+    .field input[type="date"], .field input[type="time"], .field select { height: 44px; }
+    .area-add input { padding: 12px 4px; }
 
     /* Break it down: the question, date, and buttons stack to fit a phone. */
     .breakdown-btn { height: 44px; }
@@ -619,7 +635,12 @@
         <span id="dueLabel">Due</span>
         <input type="date" id="newDue" aria-label="Due date">
       </label>
-      <button type="button" class="clear-due" id="clearDue" aria-label="Clear due date" hidden>
+      <label class="pill" id="timePill" title="Set a time">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span id="timeLabel">Time</span>
+        <input type="time" id="newTime" aria-label="Time">
+      </label>
+      <button type="button" class="clear-due" id="clearDue" aria-label="Clear date and time" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
       <button class="add-btn" type="submit" id="addBtn" disabled>Add</button>
@@ -679,10 +700,23 @@ const state = {
 const HUES = [214, 8, 152, 32, 345, 186, 48];
 const NEXT = "next"; // the "Next steps" view, not a real list
 const NEXT_HUE = 24;
+const GOALS = "goals"; // the "My goals" view (Spec 009), not a real list
+const GOALS_HUE = 186;
+// Life areas a goal can belong to. The keys match the check in the database.
+const AREAS = [
+  { key: "academic", name: "Academic" },
+  { key: "fitness", name: "Fitness" },
+  { key: "social", name: "Social" },
+  { key: "career", name: "Career" },
+  { key: "personal", name: "Personal" },
+];
+const areaName = (key) => AREAS.find((a) => a.key === key)?.name;
+const isView = (id) => id === NEXT || id === GOALS;
 const hueOf = (list) => HUES[Math.max(0, state.lists.indexOf(list)) % HUES.length];
 function applyListColor() {
   const list = state.lists.find((l) => l.id === state.listId);
-  document.documentElement.style.setProperty("--h", state.listId === NEXT ? NEXT_HUE : list ? hueOf(list) : HUES[0]);
+  document.documentElement.style.setProperty("--h",
+    state.listId === NEXT ? NEXT_HUE : state.listId === GOALS ? GOALS_HUE : list ? hueOf(list) : HUES[0]);
 }
 
 /* ---------------- Icons ---------------- */
@@ -697,6 +731,7 @@ const ICONS = {
   x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></svg>',
   replan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>',
   steps: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>',
 };
@@ -840,7 +875,7 @@ async function loadTodos() {
   }
   state.loading = false;
   const saved = storedListId();
-  state.listId = saved === NEXT || state.lists.some((l) => l.id === saved) ? saved
+  state.listId = isView(saved) || state.lists.some((l) => l.id === saved) ? saved
     : nextSteps().length ? NEXT : first ?? null;
   renderLists();
   render();
@@ -853,18 +888,27 @@ async function makeDefaultLists() {
   state.lists = data.sort(byPosition);
 }
 
-async function addTodo(title, due_date) {
-  if (!state.listId) return toast("Make a list first.");
+// Goals added from "My goals" go in the list named Goals, or the first list if there isn't one.
+function goalsListId() {
+  return (state.lists.find((l) => /^goals?$/i.test(l.name.trim())) ?? state.lists[0])?.id ?? null;
+}
+
+async function addTodo(title, due_date, due_time, area) {
+  const list_id = state.listId === GOALS ? goalsListId() : state.listId;
+  if (!list_id || state.listId === NEXT) return toast("Make a list first.");
   const now = new Date().toISOString();
   const todo = {
-    id: crypto.randomUUID(), title, notes: null, is_complete: false, list_id: state.listId,
-    parent_id: null, position: 0, due_date: due_date || null, created_at: now, updated_at: now,
+    id: crypto.randomUUID(), title, notes: null, is_complete: false, list_id,
+    parent_id: null, position: 0, due_date: due_date || null, due_time: due_time || null, area: area || null,
+    created_at: now, updated_at: now,
   };
   state.todos.push(todo);
   state.fresh.add(todo.id);
   if (state.filter === "done") setFilter("all");
   render();
-  const { error } = await sb.from("todos").insert({ id: todo.id, title, list_id: todo.list_id, due_date: todo.due_date });
+  const { error } = await sb.from("todos").insert({
+    id: todo.id, title, list_id, due_date: todo.due_date, due_time: todo.due_time, area: todo.area,
+  });
   if (error) {
     state.todos = state.todos.filter((t) => t.id !== todo.id);
     render();
@@ -962,6 +1006,17 @@ function dueInfo(s) {
   };
 }
 
+// "15:00" or "15:00:00" -> "3:00 PM"
+function timeLabel(s) {
+  if (!s) return null;
+  const [h, m] = s.split(":").map(Number);
+  return new Date(2000, 0, 1, h, m).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+// "Today · 3:00 PM", "Today", or "3:00 PM"
+function whenLabel(due, time) {
+  return [due?.label, timeLabel(time)].filter(Boolean).join(" · ");
+}
+
 function isoDate(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
@@ -985,6 +1040,7 @@ function renderHero() {
 
 function renderProgress() {
   if (state.listId === NEXT) return renderNextProgress();
+  if (state.listId === GOALS) return renderGoalsProgress();
   const items = state.todos.filter(inList);
   const total = items.length;
   const done = items.filter((t) => t.is_complete).length;
@@ -1032,6 +1088,58 @@ function renderNextProgress() {
     : n ? `${n} next ${n === 1 ? "step" : "steps"}, one for each goal` : "No next steps yet";
   $("clearDone").hidden = true;
   renderLists();
+}
+
+// Goals that belong to a life area (top-level to-dos only).
+function areaGoals(key) { return state.todos.filter((t) => !t.parent_id && (key ? t.area === key : t.area)); }
+
+// The ring counts steps for goals that have them, and the goal itself for goals that don't.
+function renderGoalsProgress() {
+  const goals = areaGoals();
+  let total = 0, done = 0;
+  for (const g of goals) {
+    const steps = stepsOf(g.id);
+    total += steps.length || 1;
+    done += steps.length ? steps.filter((s) => s.is_complete).length : g.is_complete ? 1 : 0;
+  }
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const C = 2 * Math.PI * 34;
+  $("ringFill").style.strokeDasharray = C;
+  $("ringFill").style.strokeDashoffset = C * (1 - pct / 100);
+  $("ringPct").textContent = pct + "%";
+  $("ring").classList.toggle("complete", total > 0 && done === total);
+  const open = goals.filter((g) => !g.is_complete).length;
+  const areas = new Set(goals.filter((g) => !g.is_complete).map((g) => g.area)).size;
+  $("subtitle").textContent = state.loading ? "Gathering your goals…"
+    : !goals.length ? "Pick an area and set your first goal."
+    : !open ? "Every goal done. Time to dream bigger."
+    : `${open} ${open === 1 ? "goal" : "goals"} in ${areas} ${areas === 1 ? "area" : "areas"}`;
+  $("clearDone").hidden = true;
+  renderLists();
+}
+
+function renderGoals() {
+  const nodes = [];
+  for (const area of AREAS) {
+    const goals = areaGoals(area.key);
+    const open = goals.filter((g) => !g.is_complete).sort(sortOpen);
+    const done = goals.filter((g) => g.is_complete).sort(sortDone);
+    nodes.push(el("li", { class: "section-label area-head" },
+      el("span", {}, area.name),
+      goals.length ? el("span", { class: "area-count" }, `${done.length} of ${goals.length} done`) : null));
+    nodes.push(...open.map(renderItem), ...done.map(renderItem));
+    const input = el("input", {
+      maxlength: 500, "data-area": area.key, "aria-label": `Add a ${area.name.toLowerCase()} goal`,
+      placeholder: `+ Add a${area.key === "academic" ? "n" : ""} ${area.name.toLowerCase()} goal`,
+    });
+    input.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || !input.value.trim()) return;
+      addTodo(input.value.trim(), null, null, area.key);
+      $("list").querySelector(`.area-add input[data-area="${area.key}"]`)?.focus();
+    });
+    nodes.push(el("li", { class: "area-add" }, input));
+  }
+  return nodes;
 }
 
 // The first unfinished step of each unfinished goal, soonest first.
@@ -1095,6 +1203,14 @@ function renderLists() {
   nextTab.append("Next steps");
   if (nextCount) nextTab.append(el("span", { class: "count" }, String(nextCount)));
   tabs.push(nextTab);
+  const goalCount = areaGoals().filter((g) => !g.is_complete).length;
+  const goalsTab = el("button", {
+    type: "button", class: "list-tab next-tab", html: ICONS.flag, style: `--tab-h: ${GOALS_HUE}`,
+    "aria-current": String(state.listId === GOALS), onclick: () => { if (state.listId !== GOALS) selectList(GOALS); },
+  });
+  goalsTab.append("My goals");
+  if (goalCount) goalsTab.append(el("span", { class: "count" }, String(goalCount)));
+  tabs.push(goalsTab);
   for (const l of state.lists) {
     if (state.listEdit?.id === l.id) { tabs.push(listNameInput(l.name)); continue; }
     const active = l.id === state.listId;
@@ -1215,8 +1331,10 @@ async function deleteList(id) {
 }
 
 /* ---------------- List ---------------- */
+// Soonest date first; on the same day, earliest time first and no time last.
+const whenKey = (t) => `${t.due_date ?? "9999-12-31"} ${t.due_time ?? "99"}`;
 function sortOpen(a, b) {
-  return (a.due_date ?? "9999-12-31").localeCompare(b.due_date ?? "9999-12-31") || b.created_at.localeCompare(a.created_at);
+  return whenKey(a).localeCompare(whenKey(b)) || b.created_at.localeCompare(a.created_at);
 }
 function sortDone(a, b) { return b.updated_at.localeCompare(a.updated_at); }
 
@@ -1262,9 +1380,11 @@ function renderItem(t) {
 
   const steps = stepsOf(t.id);
   const stepsDone = steps.filter((s) => s.is_complete).length;
+  const when = whenLabel(due, t.due_time);
   const meta = el("div", { class: "meta" },
-    due ? chip(due.cls, ICONS.cal, steps.length ? `Done by ${due.label}` : due.label) : null,
+    when ? chip(due?.cls ?? "", due ? ICONS.cal : ICONS.clock, steps.length ? `Done by ${when}` : when) : null,
     steps.length ? stepsChip(stepsDone, steps.length) : null,
+    t.area && state.listId !== GOALS ? chip("", ICONS.flag, areaName(t.area)) : null,
     t.notes ? chip("", ICONS.note, "Notes") : null,
   );
 
@@ -1277,6 +1397,12 @@ function renderItem(t) {
 
   const dateInput = el("input", { type: "date", value: t.due_date ?? "", "aria-label": "Due date" });
   dateInput.addEventListener("change", () => patchTodo(t.id, { due_date: dateInput.value || null }));
+  const timeInput = el("input", { type: "time", value: t.due_time?.slice(0, 5) ?? "", "aria-label": "Time" });
+  timeInput.addEventListener("change", () => patchTodo(t.id, { due_time: timeInput.value || null }));
+  const areaSelect = el("select", { "aria-label": "Life area" },
+    el("option", { value: "" }, "None"),
+    ...AREAS.map((a) => el("option", { value: a.key, selected: t.area === a.key }, a.name)));
+  areaSelect.addEventListener("change", () => patchTodo(t.id, { area: areaSelect.value || null }));
 
   const panel = el("div", { class: "panel" },
     el("div", {},
@@ -1284,7 +1410,10 @@ function renderItem(t) {
         renderSteps(t, steps),
         notes,
         el("div", { class: "panel-row" },
-          el("label", { class: "field" }, "Due", dateInput),
+          el("div", { class: "fields" },
+            el("label", { class: "field" }, "Due", dateInput),
+            el("label", { class: "field" }, "Time", timeInput),
+            el("label", { class: "field" }, "Goal area", areaSelect)),
           el("button", {
             class: "danger-btn", html: ICONS.trash, type: "button",
             onclick: () => deleteTodos([t.id], "To-do deleted"),
@@ -1402,7 +1531,8 @@ function renderSteps(t, steps) {
   } else {
     const btn = el("button", {
       type: "button", class: "breakdown-btn", html: ICONS.steps,
-      onclick: () => { state.askDueFor = t.id; render(); },
+      // Chores, errands, and other small to-dos skip the date question (Spec 009).
+      onclick: () => { if (!breakDown(t.title).length) return makePlan(t, null); state.askDueFor = t.id; render(); },
     });
     btn.append("Break it down");
     wrap.append(btn);
@@ -1517,19 +1647,21 @@ function render() {
   }
 
   const isNext = state.listId === NEXT;
-  $("composer").hidden = isNext;
-  document.querySelector(".toolbar").hidden = isNext;
+  const isGoals = state.listId === GOALS;
+  $("composer").hidden = isView(state.listId);
+  document.querySelector(".toolbar").hidden = isView(state.listId);
   const open = state.todos.filter((t) => inList(t) && !t.is_complete).sort(sortOpen);
   const done = state.todos.filter((t) => inList(t) && t.is_complete).sort(sortDone);
   const nodes = [];
   if (isNext) nodes.push(...nextSteps().map(renderNextItem));
+  if (isGoals) nodes.push(...renderGoals());
   if (state.filter !== "done") nodes.push(...open.map(renderItem));
   if (state.filter === "all" && done.length && open.length) nodes.push(el("li", { class: "section-label" }, "Completed"));
   if (state.filter !== "active") nodes.push(...done.map(renderItem));
   list.replaceChildren(...nodes);
 
   const shown = list.querySelectorAll(".item").length;
-  empty.hidden = shown > 0;
+  empty.hidden = shown > 0 || isGoals;
   if (!shown) empty.replaceChildren(emptyState());
 
   if (reduceMotion) { state.fresh.clear(); return; }
@@ -1591,25 +1723,30 @@ $("clearDone").addEventListener("click", () => {
 });
 
 /* ---------------- Composer ---------------- */
-const newTitle = $("newTitle"), newDue = $("newDue");
+const newTitle = $("newTitle"), newDue = $("newDue"), newTime = $("newTime");
 function syncComposer() {
   $("addBtn").disabled = !newTitle.value.trim();
   const info = dueInfo(newDue.value);
   $("dueLabel").textContent = info ? info.label : "Due";
   $("duePill").classList.toggle("set", !!info);
-  $("clearDue").hidden = !info;
+  $("timeLabel").textContent = timeLabel(newTime.value) ?? "Time";
+  $("timePill").classList.toggle("set", !!newTime.value);
+  $("clearDue").hidden = !info && !newTime.value;
 }
 newTitle.addEventListener("input", syncComposer);
 newDue.addEventListener("change", syncComposer);
+newTime.addEventListener("change", syncComposer);
 newDue.addEventListener("click", () => { try { newDue.showPicker(); } catch {} });
-$("clearDue").addEventListener("click", () => { newDue.value = ""; syncComposer(); });
+newTime.addEventListener("click", () => { try { newTime.showPicker(); } catch {} });
+$("clearDue").addEventListener("click", () => { newDue.value = ""; newTime.value = ""; syncComposer(); });
 $("composer").addEventListener("submit", (e) => {
   e.preventDefault();
   const title = newTitle.value.trim();
   if (!title) return;
-  addTodo(title, newDue.value);
+  addTodo(title, newDue.value, newTime.value);
   newTitle.value = "";
   newDue.value = "";
+  newTime.value = "";
   syncComposer();
   newTitle.focus();
 });
