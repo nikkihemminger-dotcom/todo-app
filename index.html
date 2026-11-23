@@ -396,9 +396,11 @@
   .step-check path { fill: none; stroke: #fff; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
   .step.done .step-check { background: var(--accent); border-color: var(--accent); }
   .step.done .step-check path { opacity: 1; }
+  /* A step's text wraps onto more lines so long steps can be read in full on a phone. */
   .step-title {
     min-width: 0; border: 0; outline: 0; background: transparent; padding: 5px 0; font-size: 14px;
     border-bottom: 1.5px solid transparent;
+    resize: none; overflow: hidden; line-height: 1.4; display: block; width: 100%;
   }
   .step-title:focus { border-bottom-color: var(--accent); }
   .step.done .step-title { color: var(--muted); text-decoration: line-through; }
@@ -1568,9 +1570,18 @@ function renderSteps(t, steps) {
 }
 
 function renderStep(s) {
-  const title = el("input", { class: "step-title", value: s.title, maxlength: 500, "aria-label": "Step" });
+  const title = el("textarea", { class: "step-title", rows: 1, maxlength: 500, "aria-label": "Step" });
+  title.value = s.title;
+  // Grows to fit the whole step, so long steps can be read in full on a phone.
+  const fit = () => {
+    if (!title.isConnected) return;
+    title.style.height = "auto";
+    title.style.height = title.scrollHeight + "px";
+  };
+  title.addEventListener("input", fit);
+  requestAnimationFrame(fit);
   title.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") title.blur();
+    if (e.key === "Enter") { e.preventDefault(); title.blur(); }
     if (e.key === "Escape") { title.value = s.title; title.blur(); }
   });
   title.addEventListener("blur", () => {
