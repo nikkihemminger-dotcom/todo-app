@@ -442,6 +442,11 @@
   .ask-due input[type="date"] { border: 1px solid var(--line-strong); background: var(--bg); border-radius: 10px; padding: 7px 10px; font-size: 14px; outline: 0; }
   .ask-due input[type="date"]:focus { border-color: var(--accent); }
   .ask-due .text-btn:hover { color: var(--ink); background: var(--line); }
+  .ask-hard { display: flex; flex-direction: column; gap: 8px; font-size: 14px; font-weight: 600; }
+  .hard-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+  .hard-btn { border: 1px solid var(--line-strong); background: var(--bg); border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 500; color: var(--ink); cursor: pointer; }
+  .hard-btn:hover, .hard-btn:focus-visible { border-color: var(--accent); color: var(--accent); outline: 0; }
+  .ask-hard .text-btn:hover { color: var(--ink); background: var(--line); }
   .step.enter { animation: stepIn .4s var(--ease) both; }
   @keyframes stepIn { from { opacity: 0; transform: translateX(-10px); } }
   .bar { width: 34px; height: 4px; border-radius: 4px; background: var(--line-strong); overflow: hidden; }
@@ -557,6 +562,7 @@
 
     /* Break it down: the question, date, and buttons stack to fit a phone. */
     .breakdown-btn { height: 44px; }
+    .hard-btn { min-height: 44px; font-size: 15px; }
     .ask-due input[type="date"] { height: 44px; flex: 1 1 140px; }
 
     /* Menus and messages: big rows to tap, and the Undo message sits above the add box. */
@@ -672,7 +678,7 @@
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, VAPID_PUBLIC_KEY } from "./config.js";
-import { breakDown } from "./breakdown.js";
+import { breakDown, HARDEST } from "./breakdown.js";
 
 const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const $ = (id) => document.getElementById(id);
@@ -689,6 +695,8 @@ const state = {
   editingId: null,
   fresh: new Set(),
   freshSteps: new Set(),
+  askHardFor: null, // to-do whose "Break it down" is asking what's hardest (Spec 010)
+  hardest: null, // that answer, used when the plan is made
   askDueFor: null, // to-do whose "Break it down" is asking for a finish date
   replanFor: null, // goal whose re-plan is asking for a new finish date
   listEdit: null, // { id } while renaming a list, { id: null } while naming a new one
@@ -1449,16 +1457,21 @@ function stepsChip(n, total) {
   return c;
 }
 
-// "Break it down" asks for a finish line first, then plans the steps back from it.
+// "Break it down" asks what's hardest and for a finish line, then plans the steps back from it.
 function makePlan(t, due) {
   state.askDueFor = null;
-  const titles = breakDown(t.title);
+  const hardest = state.hardest;
+  state.hardest = null;
+  const titles = breakDown(t.title, hardest);
   if (due && due !== t.due_date) patchTodo(t.id, { due_date: due }, { rerender: !titles.length });
   if (!titles.length) {
     render();
     return toast("This one looks small enough to do in one go. Add your own steps below if it helps.");
   }
-  addSteps(t, titles, { dates: planDates(titles.length, due) });
+  const dates = planDates(titles.length, due);
+  // "Getting started" means the first small step is for today.
+  if (hardest === "start" && dates.length) dates[0] = isoDate(new Date());
+  addSteps(t, titles, { dates });
   toast(due ? "Here’s your plan to the finish line. Edit any step to make it yours." : "Here’s a plan. Edit any step to make it yours.");
 }
 
@@ -1521,6 +1534,12 @@ function renderSteps(t, steps) {
       if (state.freshSteps.has(s.id) && !reduceMotion) { li.classList.add("enter"); li.style.animationDelay = `${delay++ * 70}ms`; }
       return li;
     })));
+  } else if (state.askHardFor === t.id) {
+    const pick = (key) => { state.askHardFor = null; state.hardest = key; state.askDueFor = t.id; render(); };
+    wrap.append(el("div", { class: "ask-hard" }, "What’s the hardest part?",
+      el("div", { class: "hard-choices" },
+        ...HARDEST.map((h) => el("button", { type: "button", class: "hard-btn", onclick: () => pick(h.key) }, h.label)),
+        el("button", { type: "button", class: "text-btn", onclick: () => pick(null) }, "Skip"))));
   } else if (state.askDueFor === t.id) {
     const date = el("input", { type: "date", value: t.due_date ?? "", min: isoDate(new Date()), "aria-label": "Finish date" });
     const go = el("button", { type: "button", class: "breakdown-btn", html: ICONS.steps, onclick: () => makePlan(t, date.value || null) });
@@ -1531,8 +1550,8 @@ function renderSteps(t, steps) {
   } else {
     const btn = el("button", {
       type: "button", class: "breakdown-btn", html: ICONS.steps,
-      // Chores, errands, and other small to-dos skip the date question (Spec 009).
-      onclick: () => { if (!breakDown(t.title).length) return makePlan(t, null); state.askDueFor = t.id; render(); },
+      // Chores, errands, and other small to-dos skip the questions (Specs 009 and 010).
+      onclick: () => { if (!breakDown(t.title).length) return makePlan(t, null); state.askHardFor = t.id; render(); },
     });
     btn.append("Break it down");
     wrap.append(btn);
